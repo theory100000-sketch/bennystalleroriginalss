@@ -1567,6 +1567,8 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                     {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
                     {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
                   </th>
+                    <th style={styles.productsHeadCell}>FullTunning</th>
+                    
                 </tr>
               </thead>
 

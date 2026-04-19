@@ -1774,6 +1774,114 @@ export default function BennysOriginalDashboard() {
                 </div>
               </section>
             )}
+{activeNav === 'Registros' && (
+              <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
+                <div style={styles.card}>
+                  <h2 style={styles.title}>Registros</h2>
+                  <div style={styles.subtitle}>Gestión de eventos y seguridad</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 24 }}>
+                    <div style={{ ...styles.card, background: '#111' }}>
+                      <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #eab308 0%, #737373 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
+                        Inscripción de Eventos
+                      </div>
+                      <div style={{ padding: 20, display: 'grid', gap: 18 }}>
+                        <div>
+                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Nombre del Participante</label>
+                          <input
+                            style={styles.input}
+                            value={eventForm.participant}
+                            onChange={(e) => setEventForm((p) => ({ ...p, participant: e.target.value }))}
+                            placeholder="Nombre completo"
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Evento</label>
+                          <input
+                            style={styles.input}
+                            value={eventForm.event}
+                            onChange={(e) => setEventForm((p) => ({ ...p, event: e.target.value }))}
+                            placeholder="Escribe el nombre del evento"
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Observación</label>
+                          <textarea
+                            style={styles.textarea}
+                            value={eventForm.note}
+                            onChange={(e) => setEventForm((p) => ({ ...p, note: e.target.value }))}
+                            placeholder="Notas adicionales..."
+                          />
+                        </div>
+                        <button style={styles.formBtn} onClick={handleEventRegistration}>Enviar Inscripción</button>
+                        {eventStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{eventStatus}</div> : null}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gap: 24 }}>
+                      <div style={{ ...styles.card, background: '#111' }}>
+                        <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #450a0a 0%, #991b1b 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
+                          Registro Policial
+                        </div>
+                        <div style={{ padding: 20, display: 'grid', gap: 18 }}>
+                          <div>
+                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Número de Placa</label>
+                            <input
+                              style={styles.input}
+                              value={plateInput}
+                              onChange={(e) => setPlateInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 3))}
+                              placeholder="231"
+                            />
+                            <div style={{ marginTop: 8, color: '#a1a1aa', fontSize: 18 }}>Formato: 231</div>
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Producto</label>
+                            <input
+                              style={styles.input}
+                              value={plateProductInput}
+                              onChange={(e) => setPlateProductInput(e.target.value)}
+                              placeholder="Producto"
+                            />
+                          </div>
+                          <button style={styles.formBtn} onClick={handlePlateRegister}>Registrar Placa</button>
+                        </div>
+                      </div>
+
+                      <div style={{ ...styles.card, background: '#1e1e1e' }}>
+                        <div style={{ fontSize: 24, color: '#d4d4d8' }}>Total de Placas Registradas</div>
+                        <div style={{ marginTop: 10, fontSize: 70, fontWeight: 900 }}>{plates.length}</div>
+                      </div>
+
+                      <div style={{ ...styles.card, background: '#111' }}>
+                        <div style={{ fontSize: 38, fontWeight: 900, marginBottom: 16 }}>Últimas Placas Registradas</div>
+                        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
+                          {session?.username === 'Theory' && (
+                            <>
+                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Exportar Excel</button>
+                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Historial</button>
+                            </>
+                          )}
+                        </div>
+                        <div style={{ maxHeight: 170, overflow: 'auto', display: 'grid', gap: 12 }}>
+                          {plates.length === 0 ? (
+                            <div style={{ color: '#a1a1aa', fontSize: 20 }}>No hay placas registradas</div>
+                          ) : (
+                            plates.map((item, i) => (
+                              <div
+                                key={`${item.plate}-${i}`}
+                                style={{ borderRadius: 16, background: '#18181b', padding: '14px 16px', fontSize: 20, fontWeight: 700 }}
+                              >
+                                Placa {item.plate} · Veces: {item.count}{item.product ? ` · Producto: ${item.product}` : ''}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
 
             {activeNav === 'Beneficios' && (
               <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr', gap: 24 }}>

@@ -8,6 +8,7 @@ const initialUsers = [
   { username: 'paikuan', password: 'vaquilla', role: 'Empleado', displayName: 'paikuan', rank: 'Mecanico Senior' },
   { username: 'MarkSG06', password: 'markwarrior_111', role: 'Empleado', displayName: 'MarkSG06', rank: 'Aprendiz' },
   { username: 'Kraw0', password: 'pawa019', role: 'Empleado', displayName: 'Kraw0', rank: 'Aprendiz' },
+  { username: '8.izaannn', password: '8izan', role: 'Empleado', displayName: '8.izaannn', rank: 'Aprendiz' },
 ];
 
 const rankRates = {

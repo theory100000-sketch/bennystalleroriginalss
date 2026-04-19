@@ -949,12 +949,16 @@ export default function BennysOriginalDashboard() {
   'Vans',
   'Off-Road',
   'Compactos',
+  'Bicletas',
   'Coupes',
   'SUVs',
   'Muscle',
   'Super',
   'Sport Classic',
   'Deportivos',
+];
+
+const isVehicleCategory = vehicleCategories.includes(selectedCategory);
 ];
 const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const workedMinutes = useMemo(() => {
@@ -1551,102 +1555,104 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                     </div>
 
                     <div style={styles.productsTableWrap}>
-                      <div style={styles.productsTableScroller}>
-                        <<table style={{ width: '100%', borderCollapse: 'collapse' }}>
+  <div style={styles.productsTableScroller}>
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead>
+        <tr>
+          <th style={styles.productsHeadCell}>Producto</th>
+          <th style={styles.productsHeadCell}>Precio<br />Normal</th>
+          <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
+          <th style={styles.productsHeadCell}>
+            {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+            {isVehicleCategory ? '(80% del valor, no incluye motor)' : 'Oferta'}
+          </th>
+        </tr>
+      </thead>
 
- <thead>
-  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-  <thead>
-    <tr>
-      <th style={styles.productsHeadCell}>Producto</th>
-      <th style={styles.productsHeadCell}>Precio<br />Normal</th>
-      <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
-      <th style={styles.productsHeadCell}>Precio<br /><Oferta></Fulltunning></th>
-      <th style={styles.productsHeadCell}>
-        {isVehicleCategory ? '(80% del valor, no incluye motor)' : 'Oferta'}
-      </th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {visibleProducts.length === 0 ? (
-      <tr>
-        <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
-      </tr>
-    ) : (
-      visibleProducts.map((p) => {
-        const fullTuningPrice =
-          isVehicleCategory && Number.isFinite(Number(p.normal))
-            ? Math.floor(Number(p.normal) * 0.8)
-            : null;
-
-        return (
-          <tr key={`${selectedCategory}-${p.name}`}>
-            <td
-              style={{
-                ...styles.productsCell,
-                cursor: 'pointer',
-                fontWeight: 900,
-                fontSize: 22,
-                lineHeight: 1.25,
-                color: '#fafafa',
-              }}
-              onClick={() =>
-                setSaleForm({
-                  product: p.name,
-                  amount: String(fullTuningPrice ?? p.convenio ?? p.normal ?? ''),
-                  source: isVehicleCategory
-                    ? 'Producto seleccionado · Full Tuning (sin motor)'
-                    : 'Producto seleccionado',
-                })
-              }
-            >
-              {p.name}
-            </td>
-
-            <td
-              style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#fde68a' }}
-              onClick={() => pickPrice(p, p.normal, 'Precio normal')}
-            >
-              {currency(p.normal)}
-            </td>
-
-            <td
-              style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#9ca3af' }}
-              onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
-            >
-              {currency(p.convenio)}
-            </td>
-
-            <td
-              style={{
-                ...styles.productsCell,
-                cursor: fullTuningPrice !== null ? 'pointer' : 'default',
-                fontSize: 22,
-                color: '#22c55e',
-                fontWeight: 900,
-              }}
-              onClick={() => {
-                if (fullTuningPrice !== null) {
-                  pickPrice(p, fullTuningPrice, 'Precio Full Tuning (sin motor)');
-                }
-              }}
-            >
-              {fullTuningPrice !== null ? currency(fullTuningPrice) : '—'}
-            </td>
+      <tbody>
+        {visibleProducts.length === 0 ? (
+          <tr>
+            <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
           </tr>
-        );
-      })
-    )}
-  </tbody>
-</table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
+        ) : (
+          visibleProducts.map((p) => {
+            const fullTuningPrice =
+              isVehicleCategory && Number.isFinite(Number(p.normal))
+                ? Math.floor(Number(p.normal) * 0.8)
+                : null;
+
+            return (
+              <tr key={`${selectedCategory}-${p.name}`}>
+                <td
+                  style={{
+                    ...styles.productsCell,
+                    cursor: 'pointer',
+                    fontWeight: 900,
+                    fontSize: 22,
+                    lineHeight: 1.25,
+                    color: '#fafafa',
+                  }}
+                  onClick={() =>
+                    setSaleForm({
+                      product: p.name,
+                      amount: String(fullTuningPrice ?? p.convenio ?? p.normal ?? ''),
+                      source: isVehicleCategory
+                        ? 'Producto seleccionado · Full Tuning (sin motor)'
+                        : 'Producto seleccionado',
+                    })
+                  }
+                >
+                  {p.name}
+                </td>
+
+                <td
+                  style={{
+                    ...styles.productsCell,
+                    cursor: 'pointer',
+                    fontSize: 22,
+                    color: '#fde68a',
+                  }}
+                  onClick={() => pickPrice(p, p.normal, 'Precio normal')}
+                >
+                  {currency(p.normal)}
+                </td>
+
+                <td
+                  style={{
+                    ...styles.productsCell,
+                    cursor: 'pointer',
+                    fontSize: 22,
+                    color: '#9ca3af',
+                  }}
+                  onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
+                >
+                  {currency(p.convenio)}
+                </td>
+
+                <td
+                  style={{
+                    ...styles.productsCell,
+                    cursor: fullTuningPrice !== null ? 'pointer' : 'default',
+                    fontSize: 22,
+                    color: '#22c55e',
+                    fontWeight: 900,
+                  }}
+                  onClick={() => {
+                    if (fullTuningPrice !== null) {
+                      pickPrice(p, fullTuningPrice, 'Precio Full Tuning (sin motor)');
+                    }
+                  }}
+                >
+                  {fullTuningPrice !== null ? currency(fullTuningPrice) : '—'}
+                </td>
+              </tr>
+            );
+          })
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
             {activeNav === 'Beneficios' && (
               <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr', gap: 24 }}>

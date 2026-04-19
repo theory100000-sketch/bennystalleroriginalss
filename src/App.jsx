@@ -1559,7 +1559,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     <th style={styles.productsHeadCell}>Precio<br />Normal</th>
     <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
     <th style={styles.productsHeadCell}>
-      {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+      {isVehicleCategory ? 'Full Tuning' : 'Precio'}<br />
       {isVehicleCategory ? '(80% sin motor)' : 'Oferta'}
     </th>
   </tr>
@@ -1577,14 +1577,14 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
       return (
         <tr key={`${selectedCategory}-${p.name}`}>
           <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900, fontSize: 22, color: '#fafafa' }}
+            style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900 }}
             onClick={() =>
               setSaleForm({
                 product: p.name,
                 amount: String(
                   isVehicleCategory
                     ? fullTuningPrice ?? ''
-                    : p.oferta ?? p.convenio ?? p.normal ?? ''
+                    : p.convenio ?? p.normal ?? ''
                 ),
                 source: isVehicleCategory ? 'Full tuning (sin motor)' : 'Producto seleccionado',
               })
@@ -1594,32 +1594,32 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
           </td>
 
           <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#fde68a' }}
+            style={{ ...styles.productsCell, cursor: 'pointer' }}
             onClick={() => pickPrice(p, p.normal, 'Precio normal')}
           >
             {currency(p.normal)}
           </td>
 
           <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#9ca3af' }}
+            style={{ ...styles.productsCell, cursor: 'pointer' }}
             onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
           >
             {currency(p.convenio)}
           </td>
 
           <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#22c55e', fontWeight: 900 }}
+            style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900, color: '#22c55e' }}
             onClick={() =>
               pickPrice(
                 p,
-                isVehicleCategory ? fullTuningPrice : p.oferta,
-                isVehicleCategory ? 'Full tuning (sin motor)' : 'Precio oferta'
+                isVehicleCategory ? fullTuningPrice : p.convenio,
+                isVehicleCategory ? 'Full tuning (sin motor)' : 'Precio convenio'
               )
             }
           >
             {isVehicleCategory
               ? (fullTuningPrice ? `${currency(fullTuningPrice)} (sin motor)` : '—')
-              : currency(p.oferta)}
+              : currency(p.convenio)}
           </td>
         </tr>
       );

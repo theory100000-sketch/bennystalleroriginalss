@@ -959,8 +959,6 @@ export default function BennysOriginalDashboard() {
 ];
 
 const isVehicleCategory = vehicleCategories.includes(selectedCategory);
-];
-const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const workedMinutes = useMemo(() => {
     if (!session?.username) return 0;
     return shifts
@@ -1562,10 +1560,10 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
           <th style={styles.productsHeadCell}>Producto</th>
           <th style={styles.productsHeadCell}>Precio<br />Normal</th>
           <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
-          <th style={styles.productsHeadCell}>
-            {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
-            {isVehicleCategory ? '(80% del valor, no incluye motor)' : 'Oferta'}
-          </th>
+         <th style={styles.productsHeadCell}>
+  {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+  {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
+</th>
         </tr>
       </thead>
 
@@ -1575,35 +1573,28 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
             <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
           </tr>
         ) : (
-          visibleProducts.map((p) => {
-            const fullTuningPrice =
-              isVehicleCategory && Number.isFinite(Number(p.normal))
-                ? Math.floor(Number(p.normal) * 0.8)
-                : null;
+          visibleProducts.map((p) => (
+  <tr key={`${selectedCategory}-${p.name}`}>
+          
 
             return (
               <tr key={`${selectedCategory}-${p.name}`}>
-                <td
-                  style={{
-                    ...styles.productsCell,
-                    cursor: 'pointer',
-                    fontWeight: 900,
-                    fontSize: 22,
-                    lineHeight: 1.25,
-                    color: '#fafafa',
-                  }}
-                  onClick={() =>
-                    setSaleForm({
-                      product: p.name,
-                      amount: String(fullTuningPrice ?? p.convenio ?? p.normal ?? ''),
-                      source: isVehicleCategory
-                        ? 'Producto seleccionado · Full Tuning (sin motor)'
-                        : 'Producto seleccionado',
-                    })
-                  }
-                >
-                  {p.name}
-                </td>
+               <td
+  style={{
+    ...styles.productsCell,
+    cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
+    fontSize: 22,
+    color: '#22c55e',
+    fontWeight: 900,
+  }}
+  onClick={() => {
+    if (p.fullTuning !== undefined) {
+      pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
+    }
+  }}
+>
+  {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
+</td>
 
                 <td
                   style={{
@@ -1629,22 +1620,22 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                   {currency(p.convenio)}
                 </td>
 
-                <td
-                  style={{
-                    ...styles.productsCell,
-                    cursor: fullTuningPrice !== null ? 'pointer' : 'default',
-                    fontSize: 22,
-                    color: '#22c55e',
-                    fontWeight: 900,
-                  }}
-                  onClick={() => {
-                    if (fullTuningPrice !== null) {
-                      pickPrice(p, fullTuningPrice, 'Precio Full Tuning (sin motor)');
-                    }
-                  }}
-                >
-                  {fullTuningPrice !== null ? currency(fullTuningPrice) : '—'}
-                </td>
+              <td
+  style={{
+    ...styles.productsCell,
+    cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
+    fontSize: 22,
+    color: '#22c55e',
+    fontWeight: 900,
+  }}
+  onClick={() => {
+    if (p.fullTuning !== undefined) {
+      pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
+    }
+  }}
+>
+  {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
+</td>
               </tr>
             );
           })

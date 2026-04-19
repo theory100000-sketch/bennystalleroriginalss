@@ -943,7 +943,7 @@ export default function BennysOriginalDashboard() {
   }, [shifts, session]);
 
   const visibleProducts = useMemo(() => initialProductsByCategory[selectedCategory] || [], [selectedCategory]);
-  const vehicleCategories = [
+const vehicleCategories = [
   'Sedans',
   'Motos',
   'Vans',
@@ -1530,120 +1530,237 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
               </section>
             )}
 
-            {activeNav === 'Productos & Ventas' && (
-              <section style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.8fr', gap: 24 }}>
-                <div style={styles.card}>
-                  <h2 style={styles.title}>Productos & Ventas</h2>
-                  <div style={styles.subtitle}>Gestiona el catálogo y registra ventas</div>
-                  <div style={styles.categoryGrid}>
-                    {categories.map((c, i) => (
-                      <button key={c} onClick={() => setSelectedCategory(c)} style={categoryButtonStyle(c, i)}>
-                        {c}
-                      </button>
-                    ))}
-                  </div>
+           {activeNav === 'Productos & Ventas' && (
+  <section style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.8fr', gap: 24 }}>
+    <div style={styles.card}>
+      <h2 style={styles.title}>Productos & Ventas</h2>
+      <div style={styles.subtitle}>Gestiona el catálogo y registra ventas</div>
 
-                  <div style={styles.productsPanel}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 22 }}>
-                      <div style={{ flex: 1 }}>
-                        <h3 style={styles.productsTitle}>Productos -<br />{selectedCategory}</h3>
-                        <div style={styles.productsDesc}>Pulsa un precio de la guía o el nombre del producto y se cargará en el formulario de venta.</div>
-                      </div>
-                      <div style={styles.productsCount}>{visibleProducts.length}<br />productos</div>
+      <div style={styles.categoryGrid}>
+        {categories.map((c, i) => (
+          <button key={c} onClick={() => setSelectedCategory(c)} style={categoryButtonStyle(c, i)}>
+            {c}
+          </button>
+        ))}
+      </div>
+
+      <div style={styles.productsPanel}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 22 }}>
+          <div style={{ flex: 1 }}>
+            <h3 style={styles.productsTitle}>Productos -<br />{selectedCategory}</h3>
+            <div style={styles.productsDesc}>
+              Pulsa un precio de la guía o el nombre del producto y se cargará en el formulario de venta.
+            </div>
+          </div>
+          <div style={styles.productsCount}>{visibleProducts.length}<br />productos</div>
+        </div>
+
+        <div style={styles.productsTableWrap}>
+          <div style={styles.productsTableScroller}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={styles.productsHeadCell}>Producto</th>
+                  <th style={styles.productsHeadCell}>Precio<br />Normal</th>
+                  <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
+                  <th style={styles.productsHeadCell}>
+                    {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+                    {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {visibleProducts.length === 0 ? (
+                  <tr>
+                    <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
+                  </tr>
+                ) : (
+                  visibleProducts.map((p) => (
+                    <tr key={`${selectedCategory}-${p.name}`}>
+                      <td
+                        style={{
+                          ...styles.productsCell,
+                          cursor: 'pointer',
+                          fontWeight: 900,
+                          fontSize: 22,
+                          lineHeight: 1.25,
+                          color: '#fafafa',
+                        }}
+                        onClick={() =>
+                          setSaleForm({
+                            product: p.name,
+                            amount: String(p.fullTuning ?? p.convenio ?? p.normal ?? ''),
+                            source: isVehicleCategory
+                              ? 'Producto seleccionado · Full Tuning manual (sin motor)'
+                              : 'Producto seleccionado',
+                          })
+                        }
+                      >
+                        {p.name}
+                      </td>
+
+                      <td
+                        style={{
+                          ...styles.productsCell,
+                          cursor: 'pointer',
+                          fontSize: 22,
+                          color: '#fde68a',
+                        }}
+                        onClick={() => pickPrice(p, p.normal, 'Precio normal')}
+                      >
+                        {currency(p.normal)}
+                      </td>
+
+                      <td
+                        style={{
+                          ...styles.productsCell,
+                          cursor: 'pointer',
+                          fontSize: 22,
+                          color: '#9ca3af',
+                        }}
+                        onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
+                      >
+                        {currency(p.convenio)}
+                      </td>
+
+                      <td
+                        style={{
+                          ...styles.productsCell,
+                          cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
+                          fontSize: 22,
+                          color: '#22c55e',
+                          fontWeight: 900,
+                        }}
+                        onClick={() => {
+                          if (p.fullTuning !== undefined) {
+                            pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
+                          }
+                        }}
+                      >
+                        {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style={{ display: 'grid', gap: 24 }}>
+      <div
+        style={{
+          borderRadius: 32,
+          padding: 28,
+          background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+          <div style={{ fontSize: 46, fontWeight: 900, lineHeight: 1 }}>
+            Mis<br />Últimas<br />Ventas
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 800, textAlign: 'right' }}>
+            {salesVisible.length}<br />visibles
+          </div>
+        </div>
+
+        <div style={{ marginTop: 20, color: '#9ca3af', fontSize: 20 }}>
+          {salesVisible.length === 0 ? 'No hay ventas todavía' : ''}
+        </div>
+
+        {salesVisible.length > 0 ? (
+          <div style={{ marginTop: 18, display: 'grid', gap: 12, maxHeight: 260, overflow: 'auto', paddingRight: 4 }}>
+            {salesVisible.slice(0, 6).map((sale) => (
+              <div key={sale.id} style={styles.listCard}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+                  <div>
+                    <div style={{ fontSize: 22, fontWeight: 800 }}>{sale.name}</div>
+                    <div style={{ marginTop: 6, color: '#d4d4d8', fontSize: 16 }}>
+                      {String(sale.time).replace('T', ' ').slice(0, 19)}
                     </div>
+                  </div>
+                  <div style={{ color: '#4ade80', fontSize: 28, fontWeight: 900 }}>{currency(sale.amount)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
 
-                    <div style={styles.productsTableWrap}>
-  <div style={styles.productsTableScroller}>
-    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        <tr>
-          <th style={styles.productsHeadCell}>Producto</th>
-          <th style={styles.productsHeadCell}>Precio<br />Normal</th>
-          <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
-         <th style={styles.productsHeadCell}>
-  {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
-  {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
-</th>
-        </tr>
-      </thead>
+        <div style={{ marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 26 }}>Total:</span>
+            <span style={{ fontSize: 48, fontWeight: 900, color: '#22c55e' }}>{currency(salesTotal)}</span>
+          </div>
 
-      <tbody>
-        {visibleProducts.length === 0 ? (
-          <tr>
-            <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
-          </tr>
-        ) : (
-          visibleProducts.map((p) => (
-  <tr key={`${selectedCategory}-${p.name}`}>
-          
+          <div style={{ marginTop: 14, color: '#9ca3af', fontSize: 18 }}>
+            Última actualización visible: {currentTime.toLocaleString('es-ES')}
+          </div>
+        </div>
+      </div>
 
-            return (
-              <tr key={`${selectedCategory}-${p.name}`}>
-               <td
-  style={{
-    ...styles.productsCell,
-    cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
-    fontSize: 22,
-    color: '#22c55e',
-    fontWeight: 900,
-  }}
-  onClick={() => {
-    if (p.fullTuning !== undefined) {
-      pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
-    }
-  }}
->
-  {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
-</td>
+      <div
+        style={{
+          borderRadius: 32,
+          padding: 28,
+          background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
+        }}
+      >
+        <div style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.05 }}>Registrar<br />Venta</div>
+        <div style={{ marginTop: 16, color: '#9ca3af', fontSize: 20, lineHeight: 1.5 }}>
+          Selecciona un precio desde la tabla o escribe el monto manualmente.
+        </div>
 
-                <td
-                  style={{
-                    ...styles.productsCell,
-                    cursor: 'pointer',
-                    fontSize: 22,
-                    color: '#fde68a',
-                  }}
-                  onClick={() => pickPrice(p, p.normal, 'Precio normal')}
-                >
-                  {currency(p.normal)}
-                </td>
+        <div style={{ marginTop: 24, display: 'grid', gap: 18 }}>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Producto</div>
+            <input
+              style={styles.input}
+              value={saleForm.product}
+              onChange={(e) => setSaleForm((p) => ({ ...p, product: e.target.value }))}
+              placeholder="Nombre del producto"
+            />
+          </div>
 
-                <td
-                  style={{
-                    ...styles.productsCell,
-                    cursor: 'pointer',
-                    fontSize: 22,
-                    color: '#9ca3af',
-                  }}
-                  onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
-                >
-                  {currency(p.convenio)}
-                </td>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Monto</div>
+            <input
+              style={styles.input}
+              value={saleForm.amount}
+              onChange={(e) => setSaleForm((p) => ({ ...p, amount: e.target.value }))}
+              placeholder="0"
+            />
+          </div>
 
-              <td
-  style={{
-    ...styles.productsCell,
-    cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
-    fontSize: 22,
-    color: '#22c55e',
-    fontWeight: 900,
-  }}
-  onClick={() => {
-    if (p.fullTuning !== undefined) {
-      pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
-    }
-  }}
->
-  {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
-</td>
-              </tr>
-            );
-          })
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div style={{ fontSize: 18, fontWeight: 800, textDecoration: 'underline', lineHeight: 1.5 }}>
+            {saleForm.source || 'Aún no has seleccionado un precio de la guía.'}
+          </div>
+
+          <button style={styles.formBtn} onClick={handleAddSale}>
+            + Registrar Venta
+          </button>
+
+          {saleStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{saleStatus}</div> : null}
+
+          <div style={{ display: 'grid', gap: 10 }}>
+            <button style={{ ...styles.sideAction, background: '#27272a', color: '#fff' }} onClick={exportSalesOnly}>
+              Exportar ventas
+            </button>
+            <button style={{ ...styles.sideAction, background: '#1f2937', color: '#fff' }} onClick={exportVisibleSales}>
+              Exportar visibles
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
 
             {activeNav === 'Beneficios' && (
               <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr', gap: 24 }}>

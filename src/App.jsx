@@ -1635,7 +1635,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                                 <tr key={`${selectedCategory}-${p.name}`}>
                                   <td
                                     style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900, fontSize: 22, lineHeight: 1.25, color: '#fafafa' }}
-                                    onClick={() => setSaleForm({ product: p.name, amount: String(p.oferta ?? p.convenio ?? p.normal ?? ''), source: 'Producto seleccionado' })}
+                                    onClick={() => setSaleForm({ product: p.name, amount: String(p.fullTuningPrice ?? p.convenio ?? p.normal ?? ''), source: 'Producto seleccionado' })}
                                   >
                                     {p.name}
                                   </td>
@@ -1653,9 +1653,9 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                                   </td>
                                   <td
                                     style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#22c55e', fontWeight: 900 }}
-                                    onClick={() => pickPrice(p, p.oferta, 'Precio oferta')}
+                                    onClick={() => pickPrice(p, p., 'Precio Fulltunning')}
                                   >
-                                    {currency(p.oferta)}
+                                    {currency(p.fullTuningPrice)}
                                   </td>
                                 </tr>
                               ))

@@ -1560,7 +1560,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
     <th style={styles.productsHeadCell}>
       {isVehicleCategory ? 'Full Tuning' : 'Precio'}<br />
-      {isVehicleCategory ? '(80% sin motor)' : 'Oferta'}
+      {isVehicleCategory ? '(80% sin motor)' : 'FullTunning'}
     </th>
   </tr>
 </thead>

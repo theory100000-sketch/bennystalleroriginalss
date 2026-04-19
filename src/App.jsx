@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 
 const initialUsers = [
-  { username: 'Theory', password: 'Theory_tm', role: 'Empleado', displayName: 'Theory', rank: 'Jefe del Taller' },
+  { username: 'Theory', password: 'theory_tm', role: 'Empleado', displayName: 'Theory', rank: 'Jefe del Taller' },
   { username: 'Mk', password: 'rblack', role: 'Empleado', displayName: 'Mk', rank: 'Jefe del Taller' },
   { username: 'Kursten', password: 'karstenkursten', role: 'Empleado', displayName: 'Kursten', rank: 'Aprendiz' },
   { username: 'paikuan', password: 'Vaquilla', role: 'Empleado', displayName: 'paikuan', rank: 'Mecanico Senior' },

@@ -943,6 +943,20 @@ export default function BennysOriginalDashboard() {
   }, [shifts, session]);
 
   const visibleProducts = useMemo(() => initialProductsByCategory[selectedCategory] || [], [selectedCategory]);
+  const vehicleCategories = [
+  'Sedans',
+  'Motos',
+  'Vans',
+  'Off-Road',
+  'Compactos',
+  'Coupes',
+  'SUVs',
+  'Muscle',
+  'Super',
+  'Sport Classic',
+  'Deportivos',
+];ddd
+const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const workedMinutes = useMemo(() => {
     if (!session?.username) return 0;
     return shifts

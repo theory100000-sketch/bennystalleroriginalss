@@ -1554,276 +1554,92 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                       <div style={styles.productsTableScroller}>
                         <<table style={{ width: '100%', borderCollapse: 'collapse' }}>
 
+ <thead>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
   <thead>
     <tr>
       <th style={styles.productsHeadCell}>Producto</th>
       <th style={styles.productsHeadCell}>Precio<br />Normal</th>
       <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
       <th style={styles.productsHeadCell}>
-        {isVehicleCategory ? 'Full Tuning' : 'Precio'}<br />
-        {isVehicleCategory ? '(80% sin motor)' : 'Oferta'}
+        {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+        {isVehicleCategory ? '(80% del valor, no incluye motor)' : 'Oferta'}
       </th>
     </tr>
   </thead>
 
   <tbody>
-    {visibleProducts.map((p) => (
-  <tr>
-    <td>{p.name}</td>
-    <td>{p.normal}</td>
-  </tr>
-))}
+    {visibleProducts.length === 0 ? (
+      <tr>
+        <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
+      </tr>
+    ) : (
+      visibleProducts.map((p) => {
+        const fullTuningPrice =
+          isVehicleCategory && Number.isFinite(Number(p.normal))
+            ? Math.floor(Number(p.normal) * 0.8)
+            : null;
+
+        return (
+          <tr key={`${selectedCategory}-${p.name}`}>
+            <td
+              style={{
+                ...styles.productsCell,
+                cursor: 'pointer',
+                fontWeight: 900,
+                fontSize: 22,
+                lineHeight: 1.25,
+                color: '#fafafa',
+              }}
+              onClick={() =>
+                setSaleForm({
+                  product: p.name,
+                  amount: String(fullTuningPrice ?? p.convenio ?? p.normal ?? ''),
+                  source: isVehicleCategory
+                    ? 'Producto seleccionado · Full Tuning (sin motor)'
+                    : 'Producto seleccionado',
+                })
+              }
+            >
+              {p.name}
+            </td>
+
+            <td
+              style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#fde68a' }}
+              onClick={() => pickPrice(p, p.normal, 'Precio normal')}
+            >
+              {currency(p.normal)}
+            </td>
+
+            <td
+              style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#9ca3af' }}
+              onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
+            >
+              {currency(p.convenio)}
+            </td>
+
+            <td
+              style={{
+                ...styles.productsCell,
+                cursor: fullTuningPrice !== null ? 'pointer' : 'default',
+                fontSize: 22,
+                color: '#22c55e',
+                fontWeight: 900,
+              }}
+              onClick={() => {
+                if (fullTuningPrice !== null) {
+                  pickPrice(p, fullTuningPrice, 'Precio Full Tuning (sin motor)');
+                }
+              }}
+            >
+              {fullTuningPrice !== null ? currency(fullTuningPrice) : '—'}
+            </td>
+          </tr>
+        );
+      })
+    )}
   </tbody>
-
 </table>
-
-                            {visibleProducts.length === 0 ? (
-                              <tr>
-                                <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
-                              </tr>
-                            ) : (
-                              visibleProducts.map((p) => (
-                                <tr key={`${selectedCategory}-${p.name}`}>
-                                  <td
-                                    style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900, fontSize: 22, lineHeight: 1.25, color: '#fafafa' }}
-                                    onClick={() => setSaleForm({ product: p.name, amount: String(p.fullTuningPrice ?? p.convenio ?? p.normal ?? ''), source: 'Producto seleccionado' })}
-                                  >
-                                    {p.name}
-                                  </td>
-                                  <td
-                                    style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#fde68a' }}
-                                    onClick={() => pickPrice(p, p.normal, 'Precio normal')}
-                                  >
-                                    {currency(p.normal)}
-                                  </td>
-                                  <td
-                                    style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#9ca3af' }}
-                                    onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
-                                  >
-                                    {currency(p.convenio)}
-                                  </td>
-                                  <td
-                                    style={{ ...styles.productsCell, cursor: 'pointer', fontSize: 22, color: '#22c55e', fontWeight: 900 }}
-                                    onClick={() => pickPrice(p, p., 'Precio Fulltunning')}
-                                  >
-                                    {currency(p.fullTuningPrice)}
-                                  </td>
-                                </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gap: 24 }}>
-                  <div style={{
-                    borderRadius: 32,
-                    padding: 28,
-                    background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-                      <div style={{ fontSize: 46, fontWeight: 900, lineHeight: 1 }}>
-                        Mis<br />Últimas<br />Ventas
-                      </div>
-                      <div style={{ fontSize: 26, fontWeight: 800, textAlign: 'right' }}>
-                        {salesVisible.length}<br />visibles
-                      </div>
-                    </div>
-
-                    <div style={{ marginTop: 20, color: '#9ca3af', fontSize: 20 }}>
-                      {salesVisible.length === 0 ? 'No hay ventas todavía' : ''}
-                    </div>
-
-                    {salesVisible.length > 0 ? (
-                      <div style={{ marginTop: 18, display: 'grid', gap: 12, maxHeight: 260, overflow: 'auto', paddingRight: 4 }}>
-                        {salesVisible.slice(0, 6).map((sale) => (
-                          <div key={sale.id} style={styles.listCard}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-                              <div>
-                                <div style={{ fontSize: 22, fontWeight: 800 }}>{sale.name}</div>
-                                <div style={{ marginTop: 6, color: '#d4d4d8', fontSize: 16 }}>{String(sale.time).replace('T', ' ').slice(0, 19)}</div>
-                              </div>
-                              <div style={{ color: '#4ade80', fontSize: 28, fontWeight: 900 }}>{currency(sale.amount)}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <div style={{ marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: 26 }}>Total:</span>
-                        <span style={{ fontSize: 48, fontWeight: 900, color: '#22c55e' }}>{currency(salesTotal)}</span>
-                      </div>
-
-                      <div style={{ marginTop: 14, color: '#9ca3af', fontSize: 18 }}>
-                        Última actualización visible: {currentTime.toLocaleString('es-ES')}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{
-                    borderRadius: 32,
-                    padding: 28,
-                    background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)'
-                  }}>
-                    <div style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.05 }}>Registrar<br />Venta</div>
-                    <div style={{ marginTop: 16, color: '#9ca3af', fontSize: 20, lineHeight: 1.5 }}>
-                      Selecciona un precio desde la tabla o escribe el monto manualmente.
-                    </div>
-
-                    <div style={{ marginTop: 24, display: 'grid', gap: 18 }}>
-                      <div>
-                        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Producto</div>
-                        <input
-                          style={styles.input}
-                          value={saleForm.product}
-                          onChange={(e) => setSaleForm((p) => ({ ...p, product: e.target.value }))}
-                          placeholder="Nombre del producto"
-                        />
-                      </div>
-
-                      <div>
-                        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Monto</div>
-                        <input
-                          style={styles.input}
-                          value={saleForm.amount}
-                          onChange={(e) => setSaleForm((p) => ({ ...p, amount: e.target.value }))}
-                          placeholder="0"
-                        />
-                      </div>
-
-                      <div style={{ fontSize: 18, fontWeight: 800, textDecoration: 'underline', lineHeight: 1.5 }}>
-                        {saleForm.source || 'Aún no has seleccionado un precio de la guía.'}
-                      </div>
-
-                      <button style={styles.formBtn} onClick={handleAddSale}>
-                        + Registrar Venta
-                      </button>
-
-                      {saleStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{saleStatus}</div> : null}
-
-                      <div style={{ display: 'grid', gap: 10 }}>
-                        <button style={{ ...styles.sideAction, background: '#27272a', color: '#fff' }} onClick={exportSalesOnly}>
-                          Exportar ventas
-                        </button>
-                        <button style={{ ...styles.sideAction, background: '#1f2937', color: '#fff' }} onClick={exportVisibleSales}>
-                          Exportar visibles
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {activeNav === 'Registros' && (
-              <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
-                <div style={styles.card}>
-                  <h2 style={styles.title}>Registros</h2>
-                  <div style={styles.subtitle}>Gestión de eventos y seguridad</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 24 }}>
-                    <div style={{ ...styles.card, background: '#111' }}>
-                      <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #eab308 0%, #737373 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
-                        Inscripción de Eventos
-                      </div>
-                      <div style={{ padding: 20, display: 'grid', gap: 18 }}>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Nombre del Participante</label>
-                          <input
-                            style={styles.input}
-                            value={eventForm.participant}
-                            onChange={(e) => setEventForm((p) => ({ ...p, participant: e.target.value }))}
-                            placeholder="Nombre completo"
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Evento</label>
-                          <input
-                            style={styles.input}
-                            value={eventForm.event}
-                            onChange={(e) => setEventForm((p) => ({ ...p, event: e.target.value }))}
-                            placeholder="Escribe el nombre del evento"
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Observación</label>
-                          <textarea
-                            style={styles.textarea}
-                            value={eventForm.note}
-                            onChange={(e) => setEventForm((p) => ({ ...p, note: e.target.value }))}
-                            placeholder="Notas adicionales..."
-                          />
-                        </div>
-                        <button style={styles.formBtn} onClick={handleEventRegistration}>Enviar Inscripción</button>
-                        {eventStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{eventStatus}</div> : null}
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gap: 24 }}>
-                      <div style={{ ...styles.card, background: '#111' }}>
-                        <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #450a0a 0%, #991b1b 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
-                          Registro Policial
-                        </div>
-                        <div style={{ padding: 20, display: 'grid', gap: 18 }}>
-                          <div>
-                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Número de Placa</label>
-                            <input
-                              style={styles.input}
-                              value={plateInput}
-                              onChange={(e) => setPlateInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 3))}
-                              placeholder="231"
-                            />
-                            <div style={{ marginTop: 8, color: '#a1a1aa', fontSize: 18 }}>Formato: 231</div>
-                          </div>
-                          <div>
-                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Producto</label>
-                            <input
-                              style={styles.input}
-                              value={plateProductInput}
-                              onChange={(e) => setPlateProductInput(e.target.value)}
-                              placeholder="Producto"
-                            />
-                          </div>
-                          <button style={styles.formBtn} onClick={handlePlateRegister}>Registrar Placa</button>
-                        </div>
-                      </div>
-
-                      <div style={{ ...styles.card, background: '#1e1e1e' }}>
-                        <div style={{ fontSize: 24, color: '#d4d4d8' }}>Total de Placas Registradas</div>
-                        <div style={{ marginTop: 10, fontSize: 70, fontWeight: 900 }}>{plates.length}</div>
-                      </div>
-
-                      <div style={{ ...styles.card, background: '#111' }}>
-                        <div style={{ fontSize: 38, fontWeight: 900, marginBottom: 16 }}>Últimas Placas Registradas</div>
-                        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
-                          {session?.username === 'Theory' && (
-                            <>
-                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Exportar Excel</button>
-                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Historial</button>
-                            </>
-                          )}
-                        </div>
-                        <div style={{ maxHeight: 170, overflow: 'auto', display: 'grid', gap: 12 }}>
-                          {plates.length === 0 ? (
-                            <div style={{ color: '#a1a1aa', fontSize: 20 }}>No hay placas registradas</div>
-                          ) : (
-                            plates.map((item, i) => (
-                              <div
-                                key={`${item.plate}-${i}`}
-                                style={{ borderRadius: 16, background: '#18181b', padding: '14px 16px', fontSize: 20, fontWeight: 700 }}
-                              >
-                                Placa {item.plate} · Veces: {item.count}{item.product ? ` · Producto: ${item.product}` : ''}
-                              </div>
-                            ))
-                          )}
                         </div>
                       </div>
                     </div>

@@ -422,7 +422,7 @@ const convenioData = {
   Badulaques: [],
   Talleres: [],
   Ocio: [],
-  Servicios: ['LSPD'],
+  Servicios: ['LSPD'],['LSSM'],
   Organizaciones: [],
 };
 

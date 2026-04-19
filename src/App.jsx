@@ -433,23 +433,33 @@ const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/149514878812435676
 const styles = {
   page: {
     minHeight: '100vh',
-    background: 'radial-gradient(circle at top right, rgba(234,179,8,0.08), transparent 28%), radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 24%), linear-gradient(180deg, #060606 0%, #040404 100%)',
+    background:
+      'radial-gradient(circle at top right, rgba(234,179,8,0.08), transparent 28%), radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 24%), linear-gradient(180deg, #060606 0%, #040404 100%)',
     color: '#fff',
     fontFamily: 'Inter, Arial, sans-serif',
   },
   app: { display: 'flex', minHeight: '100vh' },
+
   sidebar: {
-    width: 300,
-    background: 'linear-gradient(180deg, rgba(5,5,5,0.98) 0%, rgba(8,8,8,0.98) 100%)',
+    width: 306,
+    background: 'linear-gradient(180deg, #040404 0%, #050505 100%)',
     borderRight: '1px solid rgba(255,255,255,0.08)',
-    padding: 18,
+    padding: '20px 16px',
     boxSizing: 'border-box',
     boxShadow: 'inset -1px 0 0 rgba(255,255,255,0.03)',
   },
-  brand: { display: 'flex', alignItems: 'center', gap: 14, padding: '8px 8px 0' },
+
+  brand: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '4px 8px 0',
+    marginBottom: 18,
+  },
+
   logo: {
-    width: 64,
-    height: 64,
+    width: 72,
+    height: 72,
     borderRadius: 18,
     overflow: 'hidden',
     background: '#000',
@@ -457,77 +467,160 @@ const styles = {
     border: '1px solid rgba(255,255,255,0.08)',
     boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
   },
-  logoImg: { width: '100%', height: '100%', objectFit: 'contain' },
-  navWrap: { marginTop: 26, display: 'flex', flexDirection: 'column', gap: 12 },
+
+  logoImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+  },
+
+  navWrap: {
+    marginTop: 22,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+  },
+
   navButton: {
     width: '100%',
-    border: '1px solid rgba(255,255,255,0.04)',
-    borderRadius: 20,
-    padding: '17px 18px',
+    border: '1px solid rgba(255,255,255,0.05)',
+    borderRadius: 22,
+    padding: '16px 18px',
     textAlign: 'left',
-    fontSize: 22,
-    fontWeight: 700,
+    fontSize: 18,
+    fontWeight: 800,
     cursor: 'pointer',
-    background: 'rgba(255,255,255,0.015)',
+    background: 'rgba(255,255,255,0.01)',
     color: '#f4f4f5',
     boxShadow: '0 10px 24px rgba(0,0,0,0.12)',
   },
+
   navButtonActive: {
-    background: 'linear-gradient(90deg, #facc15 0%, #a3a3a3 100%)',
+    background: 'linear-gradient(90deg, #facc15 0%, #bdbdbd 100%)',
     color: '#000',
-    boxShadow: '0 0 24px rgba(234,179,8,.22), inset 0 1px 0 rgba(255,255,255,.3)',
+    boxShadow: '0 0 0 2px rgba(255,255,255,0.9) inset, 0 0 24px rgba(234,179,8,.22)',
   },
+
   sideAction: {
     width: '100%',
-    border: '1px solid rgba(255,255,255,0.04)',
-    borderRadius: 20,
+    border: '1px solid rgba(255,255,255,0.05)',
+    borderRadius: 22,
     padding: '15px 18px',
-    fontSize: 20,
-    fontWeight: 800,
+    fontSize: 18,
+    fontWeight: 900,
     cursor: 'pointer',
     boxShadow: '0 10px 24px rgba(0,0,0,0.18)',
   },
+
   main: { flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 },
+
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '20px 32px',
+    padding: '20px 28px 16px',
     borderBottom: '1px solid rgba(255,255,255,0.08)',
-    background: 'linear-gradient(180deg, rgba(10,10,10,0.96) 0%, rgba(6,6,6,0.96) 100%)',
-    backdropFilter: 'blur(12px)',
+    background: 'linear-gradient(180deg, rgba(8,8,8,0.96) 0%, rgba(5,5,5,0.96) 100%)',
   },
-  content: { padding: 24, overflowY: 'auto', height: 'calc(100vh - 89px)', boxSizing: 'border-box' },
-  title: { fontSize: 64, fontWeight: 900, margin: 0, lineHeight: 1, letterSpacing: '-0.04em' },
-  subtitle: { color: '#a1a1aa', fontSize: 30, marginTop: 8 },
-  grid3: { display: 'grid', gridTemplateColumns: '1fr 1fr 0.95fr', gap: 20 },
+
+  content: {
+    padding: 26,
+    overflowY: 'auto',
+    height: 'calc(100vh - 89px)',
+    boxSizing: 'border-box',
+  },
+
+  title: {
+    fontSize: 66,
+    fontWeight: 900,
+    margin: 0,
+    lineHeight: 0.95,
+    letterSpacing: '-0.05em',
+    textAlign: 'center',
+  },
+
+  subtitle: {
+    color: '#a1a1aa',
+    fontSize: 26,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+
+  grid3: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 0.9fr',
+    gap: 18,
+  },
+
   card: {
-    borderRadius: 30,
-    background: 'linear-gradient(180deg, rgba(19,19,19,0.98) 0%, rgba(11,11,11,0.98) 100%)',
+    borderRadius: 34,
+    background: 'linear-gradient(180deg, rgba(12,12,12,0.98) 0%, rgba(7,7,7,0.98) 100%)',
     border: '1px solid rgba(255,255,255,0.08)',
     padding: 24,
     boxSizing: 'border-box',
     boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
   },
+
   darkCard: {
-    borderRadius: 30,
-    background: 'linear-gradient(180deg, rgba(9,9,9,0.98) 0%, rgba(6,6,6,0.98) 100%)',
-    padding: 32,
+    borderRadius: 32,
+    background: 'linear-gradient(180deg, rgba(7,7,7,0.98) 0%, rgba(3,3,3,0.98) 100%)',
+    padding: 30,
     boxSizing: 'border-box',
     border: '1px solid rgba(255,255,255,0.06)',
     boxShadow: '0 24px 50px rgba(0,0,0,0.34)',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
   },
+
   buttonBig: {
     border: '1px solid rgba(255,255,255,0.05)',
-    borderRadius: 30,
-    padding: 40,
-    minHeight: 180,
-    fontSize: 28,
-    fontWeight: 800,
+    borderRadius: 32,
+    padding: 36,
+    minHeight: 238,
+    fontSize: 30,
+    fontWeight: 900,
     cursor: 'pointer',
     boxShadow: '0 24px 50px rgba(0,0,0,0.25)',
   },
-  tableWrap: { overflow: 'hidden', borderRadius: 22, border: '1px solid rgba(255,255,255,0.06)', marginTop: 20, background: '#0d0d0d' },
+
+  tableWrap: {
+    overflow: 'hidden',
+    borderRadius: 24,
+    border: '1px solid rgba(255,255,255,0.06)',
+    marginTop: 18,
+    background: '#090909',
+  },
+
+  tableScroller: {
+    maxHeight: 420,
+    overflow: 'auto',
+  },
+
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+
+  th: {
+    position: 'sticky',
+    top: 0,
+    background: '#2b2b31',
+    padding: '18px 20px',
+    textAlign: 'left',
+    fontSize: 18,
+    fontWeight: 900,
+    zIndex: 1,
+  },
+
+  td: {
+    padding: '18px 20px',
+    borderTop: '1px solid rgba(255,255,255,0.06)',
+    fontSize: 18,
+  },
+
   productsPanel: {
     borderRadius: 34,
     background: 'linear-gradient(180deg, rgba(10,10,10,0.98) 0%, rgba(7,7,7,0.98) 100%)',
@@ -536,6 +629,7 @@ const styles = {
     boxSizing: 'border-box',
     boxShadow: '0 26px 60px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.03)',
   },
+
   productsTitle: {
     fontSize: 76,
     lineHeight: 0.95,
@@ -543,6 +637,7 @@ const styles = {
     margin: 0,
     letterSpacing: '-0.05em',
   },
+
   productsDesc: {
     marginTop: 22,
     maxWidth: 760,
@@ -550,6 +645,7 @@ const styles = {
     fontSize: 26,
     lineHeight: 1.45,
   },
+
   productsCount: {
     fontSize: 28,
     lineHeight: 1.15,
@@ -557,6 +653,7 @@ const styles = {
     textAlign: 'right',
     minWidth: 140,
   },
+
   productsTableWrap: {
     marginTop: 34,
     overflow: 'hidden',
@@ -565,7 +662,9 @@ const styles = {
     background: 'linear-gradient(180deg, rgba(14,14,16,0.98) 0%, rgba(8,8,8,0.98) 100%)',
     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
   },
+
   productsTableScroller: { maxHeight: 630, overflow: 'auto' },
+
   productsHeadCell: {
     position: 'sticky',
     top: 0,
@@ -577,26 +676,16 @@ const styles = {
     color: '#f4f4f5',
     background: 'linear-gradient(90deg, rgba(46,46,52,0.98) 0%, rgba(34,34,38,0.98) 100%)',
   },
+
   productsCell: {
     padding: '20px 28px',
     borderTop: '1px solid rgba(255,255,255,0.06)',
     fontSize: 20,
     verticalAlign: 'top',
   },
-  tableScroller: { maxHeight: 420, overflow: 'auto' },
-  table: { width: '100%', borderCollapse: 'collapse' },
-  th: {
-    position: 'sticky',
-    top: 0,
-    background: '#27272a',
-    padding: '16px 18px',
-    textAlign: 'left',
-    fontSize: 20,
-    zIndex: 1,
-    boxShadow: '0 1px 0 rgba(255,255,255,0.05)',
-  },
-  td: { padding: '16px 18px', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: 19 },
+
   categoryGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 18 },
+
   categoryBtn: {
     border: '1px solid rgba(255,255,255,0.05)',
     borderRadius: 28,
@@ -608,6 +697,7 @@ const styles = {
     cursor: 'pointer',
     boxShadow: '0 18px 40px rgba(0,0,0,0.18)',
   },
+
   input: {
     width: '100%',
     boxSizing: 'border-box',
@@ -620,6 +710,7 @@ const styles = {
     outline: 'none',
     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
   },
+
   textarea: {
     width: '100%',
     minHeight: 160,
@@ -634,6 +725,7 @@ const styles = {
     resize: 'vertical',
     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
   },
+
   formBtn: {
     width: '100%',
     border: 'none',
@@ -646,14 +738,24 @@ const styles = {
     cursor: 'pointer',
     boxShadow: '0 16px 34px rgba(234,179,8,.22)',
   },
-  badge: { borderRadius: 18, padding: '12px 18px', fontSize: 20, fontWeight: 800, boxShadow: '0 12px 28px rgba(0,0,0,0.18)' },
+
+  badge: {
+    borderRadius: 18,
+    padding: '12px 18px',
+    fontSize: 20,
+    fontWeight: 800,
+    boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
+  },
+
   listCard: {
     borderRadius: 26,
     background: 'linear-gradient(180deg, #20356d 0%, #182852 100%)',
     padding: 20,
     boxShadow: '0 18px 40px rgba(0,0,0,0.2)',
   },
+
   statGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 },
+
   statCard: {
     borderRadius: 24,
     background: 'linear-gradient(180deg, #202020 0%, #171717 100%)',
@@ -661,6 +763,7 @@ const styles = {
     border: '1px solid rgba(255,255,255,0.06)',
     boxShadow: '0 16px 34px rgba(0,0,0,0.22)',
   },
+
   greenBox: {
     marginTop: 18,
     borderRadius: 26,
@@ -670,6 +773,7 @@ const styles = {
     boxShadow: '0 20px 40px rgba(34,197,94,0.18)',
   },
 };
+
 
 const dateTimeNow = () => new Date().toISOString();
 const pad = (n) => String(n).padStart(2, '0');

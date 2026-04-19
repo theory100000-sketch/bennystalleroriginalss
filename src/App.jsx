@@ -1569,10 +1569,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     </tr>
   </thead>
 
-  <tbody>
-  
 </table>
-
 <tbody>
 
                             {visibleProducts.length === 0 ? (

@@ -9,7 +9,7 @@ const initialUsers = [
   { username: 'MarkSG06', password: 'markwarrior_111', role: 'Empleado', displayName: 'MarkSG06', rank: 'Aprendiz' },
   { username: 'Kraw0', password: 'pawa019', role: 'Empleado', displayName: 'Kraw0', rank: 'Aprendiz' },
   { username: '8.izaannn', password: '8izan', role: 'Empleado', displayName: '8.izaannn', rank: 'Aprendiz' },
-  { username: 'Dr4c0_152', password: 'dr4c0_152', role: 'Empleado', displayName: '8.izaannn', rank: 'Aprendiz' },
+  { username: 'Dr4c0_152', password: 'dr4c0_152', role: 'Empleado', displayName: 'dr4c0_152', rank: 'Aprendiz' },
 ];
 
 const rankRates = {

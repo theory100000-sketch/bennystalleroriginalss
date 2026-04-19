@@ -1552,10 +1552,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
 
                     <div style={styles.productsTableWrap}>
                       <div style={styles.productsTableScroller}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-
-  👇 AQUÍ PEGAS LO NUEVO 👇
+                        <<table style={{ width: '100%', borderCollapse: 'collapse' }}>
 
   <thead>
     <tr>
@@ -1569,8 +1566,16 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     </tr>
   </thead>
 
+  <tbody>
+    {visibleProducts.map((p) => (
+  <tr>
+    <td>{p.name}</td>
+    <td>{p.normal}</td>
+  </tr>
+))}
+  </tbody>
+
 </table>
-<tbody>
 
                             {visibleProducts.length === 0 ? (
                               <tr>

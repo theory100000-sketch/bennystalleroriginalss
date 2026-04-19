@@ -422,7 +422,7 @@ const convenioData = {
   Badulaques: [],
   Talleres: [],
   Ocio: [],
-  Servicios: ['LSPD'],['LSSM'],
+  Servicios: ['LSPD', 'LSSM'],
   Organizaciones: [],
 };
 
@@ -955,7 +955,7 @@ export default function BennysOriginalDashboard() {
   'Super',
   'Sport Classic',
   'Deportivos',
-];<thead>
+];
 const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const workedMinutes = useMemo(() => {
     if (!session?.username) return 0;
@@ -1295,7 +1295,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
       <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ width: '100%', maxWidth: 680, borderRadius: 32, border: '1px solid rgba(255,255,255,.1)', background: 'linear-gradient(180deg, #0f0f11 0%, #050505 100%)', padding: 32, boxSizing: 'border-box', boxShadow: '0 0 80px rgba(0,0,0,.7)' }}>
           <div style={{ ...styles.logo, width: 144, height: 144, margin: '0 auto 28px', boxShadow: '0 0 50px rgba(234,179,8,.08)', border: '1px solid rgba(255,255,255,.1)' }}>
-            <img src="/public/logo-meca.png" alt="Bennys Logo" style={styles.logoImg} />
+            <img src="/logo-meca.png" alt="Bennys Logo" style={styles.logoImg} />
           </div>
           <h1 style={{ textAlign: 'center', fontSize: 58, margin: 0, fontWeight: 900 }}>Bennys Original</h1>
           <div style={{ textAlign: 'center', fontSize: 28, color: '#a1a1aa', marginTop: 12 }}>Sistema de Gestión de Personal</div>
@@ -1560,72 +1560,13 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
     <th style={styles.productsHeadCell}>
       {isVehicleCategory ? 'Full Tuning' : 'Precio'}<br />
-      {isVehicleCategory ? '(80% sin motor)' : 'FullTunning'}
+      {isVehicleCategory ? '(80% sin motor)' : 'Oferta'}
     </th>
   </tr>
 </thead>
 
 <tbody>
-  {visibleProducts.length === 0 ? (
-    <tr>
-      <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
-    </tr>
-  ) : (
-    visibleProducts.map((p) => {
-      const fullTuningPrice = p.normal ? Math.floor(p.normal * 0.8) : null;
 
-      return (
-        <tr key={`${selectedCategory}-${p.name}`}>
-          <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900 }}
-            onClick={() =>
-              setSaleForm({
-                product: p.name,
-                amount: String(
-                  isVehicleCategory
-                    ? fullTuningPrice ?? ''
-                    : p.convenio ?? p.normal ?? ''
-                ),
-                source: isVehicleCategory ? 'Full tuning (sin motor)' : 'Producto seleccionado',
-              })
-            }
-          >
-            {p.name}
-          </td>
-
-          <td
-            style={{ ...styles.productsCell, cursor: 'pointer' }}
-            onClick={() => pickPrice(p, p.normal, 'Precio normal')}
-          >
-            {currency(p.normal)}
-          </td>
-
-          <td
-            style={{ ...styles.productsCell, cursor: 'pointer' }}
-            onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
-          >
-            {currency(p.convenio)}
-          </td>
-
-          <td
-            style={{ ...styles.productsCell, cursor: 'pointer', fontWeight: 900, color: '#22c55e' }}
-            onClick={() =>
-              pickPrice(
-                p,
-                isVehicleCategory ? fullTuningPrice : p.convenio,
-                isVehicleCategory ? 'Full tuning (sin motor)' : 'Precio Convenio'
-              )
-            }
-          >
-            {isVehicleCategory
-              ? (fullTuningPrice ? `${currency(fullTuningPrice)} (sin motor)` : '—')
-              : currency(p.convenio)}
-          </td>
-        </tr>
-      );
-    })
-  )}
-</tbody>
                             {visibleProducts.length === 0 ? (
                               <tr>
                                 <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>

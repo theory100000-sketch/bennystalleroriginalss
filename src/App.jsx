@@ -65,7 +65,7 @@ const initialProductsByCategory = {
   ],
   Sedans: [
     { name: 'Albany Primo', normal: 4500, fullTuning: 5000 },
-    { name: 'Albany Primo Custom', normal: 13000 },
+    { name: 'Albany Primo Custom', normal: 13000, fullTuning: 3000  },
     { name: 'Albany Washington', normal: 6500 },
     { name: 'Benefactor Glendale', normal: 3000 },
     { name: 'Benefactor Glendale Custom', normal: 11000 },

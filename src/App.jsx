@@ -1613,7 +1613,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
               pickPrice(
                 p,
                 isVehicleCategory ? fullTuningPrice : p.convenio,
-                isVehicleCategory ? 'Full tuning (sin motor)' : 'Precio convenio'
+                isVehicleCategory ? 'Full tuning (sin motor)' : 'Precio Convenio'
               )
             }
           >

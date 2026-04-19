@@ -22,7 +22,7 @@ const rankRates = {
 
 const initialProductsByCategory = {
   'Mejoras avanzadas': [
-    { name: 'Tracción total (AWD)', normal: 920, convenio: 900 },
+    { name: 'Tracción total (AWD)', normal: 920, convenio: 900,  },
     { name: 'Tracción trasera (RWD)', normal: 600, convenio: 470 },
     { name: 'Tracción delantera (FWD)', normal: 600, convenio: 550 },
     { name: 'Neumáticos slick', normal: 700, convenio: 600 },
@@ -64,7 +64,7 @@ const initialProductsByCategory = {
     { name: 'Pastillas de freno', normal: 220, convenio: 200 },
   ],
   Sedans: [
-    { name: 'Albany Primo', normal: 4500 },
+    { name: 'Albany Primo', normal: 4500, Oferta: 9000 },
     { name: 'Albany Primo Custom', normal: 13000 },
     { name: 'Albany Washington', normal: 6500 },
     { name: 'Benefactor Glendale', normal: 3000 },

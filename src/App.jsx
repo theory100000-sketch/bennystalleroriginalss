@@ -5,7 +5,7 @@ const initialUsers = [
   { username: 'Theory', password: 'Theory_tm', role: 'Empleado', displayName: 'Theory', rank: 'Jefe del Taller' },
   { username: 'Mk', password: 'rblack', role: 'Empleado', displayName: 'Mk', rank: 'Jefe del Taller' },
   { username: 'Kursten', password: 'karstenkursten', role: 'Empleado', displayName: 'Kursten', rank: 'Aprendiz' },
-  { username: 'paikuan', password: 'vaquilla', role: 'Empleado', displayName: 'paikuan', rank: 'Mecanico Senior' },
+  { username: 'paikuan', password: 'Vaquilla', role: 'Empleado', displayName: 'paikuan', rank: 'Mecanico Senior' },
   { username: 'MarkSG06', password: 'markwarrior_111', role: 'Empleado', displayName: 'MarkSG06', rank: 'Aprendiz' },
   { username: 'Kraw0', password: 'pawa019', role: 'Empleado', displayName: 'Kraw0', rank: 'Aprendiz' },
   { username: '8.izaannn', password: '8izan', role: 'Empleado', displayName: '8.izaannn', rank: 'Aprendiz' },

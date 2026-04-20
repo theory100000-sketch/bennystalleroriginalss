@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 
 const initialUsers = [
-  { username: 'Theory', password: 'theory_tm', role: 'Empleado', displayName: 'Theory', rank: 'Jefe del Taller' },
+  { username: 'Theory', password: 'Theory_tm', role: 'Empleado', displayName: 'Theory', rank: 'Jefe del Taller' },
   { username: 'Mk', password: 'rblack', role: 'Empleado', displayName: 'Mk', rank: 'Jefe del Taller' },
   { username: 'Kursten', password: 'karstenkursten', role: 'Empleado', displayName: 'Kursten', rank: 'Aprendiz' },
   { username: 'paikuan', password: 'Vaquilla', role: 'Empleado', displayName: 'paikuan', rank: 'Mecanico Senior' },
@@ -64,8 +64,8 @@ const initialProductsByCategory = {
     { name: 'Pastillas de freno', normal: 220, convenio: 200 },
   ],
   Sedans: [
-    { name: 'Albany Primo', normal: 4500, fullTuning: 5000 },
-    { name: 'Albany Primo Custom', normal: 13000, fullTuning: 3000  },
+    { name: 'Albany Primo', normal: 4500, fullTuning: 9000 },
+    { name: 'Albany Primo Custom', normal: 13000 },
     { name: 'Albany Washington', normal: 6500 },
     { name: 'Benefactor Glendale', normal: 3000 },
     { name: 'Benefactor Glendale Custom', normal: 11000 },
@@ -894,6 +894,7 @@ function StatCard({ title, value, subtitle, valueClass }) {
 }
 
 export default function BennysOriginalDashboard() {
+  const [shiftRows, setShiftRows] = useState([]);
   const [users] = useState(initialUsers);
   const [session, setSession] = useState(() => loadLS('bennys_session', null));
   const [activeNav, setActiveNav] = useState('Inicio');
@@ -936,6 +937,48 @@ export default function BennysOriginalDashboard() {
   useEffect(() => localStorage.setItem('bennys_shifts', JSON.stringify(shifts)), [shifts]);
   useEffect(() => localStorage.setItem('bennys_events', JSON.stringify(eventRegistrations)), [eventRegistrations]);
   useEffect(() => localStorage.setItem('bennys_plates', JSON.stringify(plates)), [plates]);
+  useEffect(() => {
+    const cargarFichajes = async () => {
+      try {
+        const url = "https://docs.google.com/spreadsheets/d/1KQQ6vv6QoBbFOdz4K0yaRvjblo_xnMEOAtleN27UDws/export?format=xlsx";
+
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+
+        const workbook = XLSX.read(buffer, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        const data = XLSX.utils.sheet_to_json(sheet);
+        const parsed = data.map((row, i) => {
+          const fechaObj = excelDateToJSDate(row["Fecha"]);
+
+          return {
+            id: i,
+            nombre: row["Nombre"],
+
+            fecha: fechaObj.toLocaleDateString("es-ES"),
+
+            entrada: excelTimeToHHMM(row["Entrada"]),
+
+            salida: row["Salida"]
+              ? excelTimeToHHMM(row["Salida"])
+              : "--:--",
+
+            horas: row["Horas Totales"]
+              ? (row["Horas Totales"] * 24).toFixed(2) + "h"
+              : "--",
+          };
+        });
+
+        setShiftRows(parsed);
+
+      } catch (err) {
+        console.error("Error leyendo Excel:", err);
+      }
+    };
+
+    cargarFichajes();
+  }, []);
 
   const currentShift = useMemo(() => {
     if (!session?.username) return null;
@@ -976,19 +1019,19 @@ export default function BennysOriginalDashboard() {
   const payrollTotal = subtotalHoras + salesCommission + bonoApertura + bonoEvento;
   const salesVisible = useMemo(() => [...sales].sort((a, b) => new Date(b.time) - new Date(a.time)), [sales]);
 
-  const shiftRows = useMemo(
-    () =>
-      [...shifts]
-        .sort((a, b) => new Date(b.start) - new Date(a.start))
-        .map((s) => ({
-          ...s,
-          fecha: formatDate(s.start),
-          entrada: formatTime(s.start),
-          salida: s.end ? formatTime(s.end) : '--:--',
-          horas: formatMinutes(diffMinutes(s.start, s.end || dateTimeNow())),
-        })),
-    [shifts]
-  );
+  // const shiftRows = useMemo(
+  //   () =>
+  //     [...shifts]
+  //       .sort((a, b) => new Date(b.start) - new Date(a.start))
+  //       .map((s) => ({
+  //         ...s,
+  //         fecha: formatDate(s.start),
+  //         entrada: formatTime(s.start),
+  //         salida: s.end ? formatTime(s.end) : '--:--',
+  //         horas: formatMinutes(diffMinutes(s.start, s.end || dateTimeNow())),
+  //       })),
+  //   [shifts]
+  // );
 
   const convenioEntries = useMemo(
     () => Object.entries(convenioData).map(([cat, list]) => ({ cat, count: `${list.length} locales`, active: cat === selectedConvenio })),
@@ -1072,15 +1115,15 @@ export default function BennysOriginalDashboard() {
     setSession({ username: found.username, role: found.role, displayName: found.displayName, rank: found.rank, loginAt: dateTimeNow() });
   };
 
-  const handleClockIn = () => {
-    if (!session?.username || currentShift) return;
-    setShifts((prev) => [...prev, { id: Date.now(), nombre: session.username, start: dateTimeNow(), end: null }]);
-  };
+  // const handleClockIn = () => {
+  //   if (!session?.username || currentShift) return;
+  //   setShifts((prev) => [...prev, { id: Date.now(), nombre: session.username, start: dateTimeNow(), end: null }]);
+  // };
 
-  const handleClockOut = () => {
-    if (!currentShift) return;
-    setShifts((prev) => prev.map((s) => (s.id === currentShift.id ? { ...s, end: dateTimeNow() } : s)));
-  };
+  // const handleClockOut = () => {
+  //   if (!currentShift) return;
+  //   setShifts((prev) => prev.map((s) => (s.id === currentShift.id ? { ...s, end: dateTimeNow() } : s)));
+  // };
 
   const pickPrice = (product, price, label) => {
     if (price === null || price === undefined || !Number.isFinite(Number(price))) return;
@@ -1319,6 +1362,114 @@ export default function BennysOriginalDashboard() {
     );
   }
 
+  const URL = "https://docs.google.com/forms/d/e/1FAIpQLSfxqesIlOkXjIXCsntgnH7pZ4_Jgs_L-gaNvYfrcY0IoCBiig/formResponse";
+  const handleClockIn = async () => {
+    const ahora = new Date();
+
+    localStorage.setItem("entrada", ahora.toISOString());
+
+    const formData = new FormData();
+
+    formData.append("entry.1175950074", session.displayName);
+
+    formData.append("entry.800526615_year", ahora.getFullYear());
+    formData.append("entry.800526615_month", ahora.getMonth() + 1);
+    formData.append("entry.800526615_day", ahora.getDate());
+
+    formData.append("entry.2074533824_hour", ahora.getHours());
+    formData.append("entry.2074533824_minute", ahora.getMinutes());
+
+    // salida vacía
+    formData.append("entry.866622763_hour", "");
+    formData.append("entry.866622763_minute", "");
+
+    // horas vacías
+    formData.append("entry.858242825_hour", "");
+    formData.append("entry.858242825_minute", "");
+
+    await fetch(URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+  };
+  const handleClockOut = async () => {
+    const entradaISO = localStorage.getItem("entrada");
+
+    if (!entradaISO) {
+      alert("No has fichado entrada");
+      return;
+    }
+
+    const entrada = new Date(entradaISO);
+    const salida = new Date();
+
+    const diffMs = salida - entrada;
+    const horas = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs / (1000 * 60)) % 60);
+
+    const formData = new FormData();
+
+    formData.append("entry.1175950074", session.displayName);
+
+    formData.append("entry.800526615_year", salida.getFullYear());
+    formData.append("entry.800526615_month", salida.getMonth() + 1);
+    formData.append("entry.800526615_day", salida.getDate());
+
+    // entrada original
+    formData.append("entry.2074533824_hour", entrada.getHours());
+    formData.append("entry.2074533824_minute", entrada.getMinutes());
+
+    // salida real
+    formData.append("entry.866622763_hour", salida.getHours());
+    formData.append("entry.866622763_minute", salida.getMinutes());
+
+    // horas calculadas
+    formData.append("entry.858242825_hour", horas);
+    formData.append("entry.858242825_minute", minutos);
+
+    await fetch(URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+
+    localStorage.removeItem("entrada");
+  };
+  const excelDateToJSDate = (serial) => {
+    const utc_days = Math.floor(serial - 25569);
+    const utc_value = utc_days * 86400;
+    return new Date(utc_value * 1000);
+  };
+
+  const excelTimeToHHMM = (value) => {
+    if (!value) return "--:--";
+
+    const totalSeconds = Math.round(value * 86400);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  };
+  const shiftRowsFiltrados = shiftRows.filter(
+    r => r.nombre?.toLowerCase() === session.displayName?.toLowerCase() && (r.horas && r.horas !== "--")
+  );
+  const workMinutes = shiftRowsFiltrados.reduce((total, r) => {
+    if (!r.horas || r.horas === "--") return total;
+
+    const horasNum = Number(r.horas.replace("h", ""));
+    if (!horasNum) return total;
+
+    const minutos = Math.floor(horasNum * 60);
+
+    return total + minutos;
+  }, 0);
+  const formatMinutes = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = Math.round(mins % 60);
+
+    return `${h}h ${String(m).padStart(2, "0")}m`;
+  };
   return (
     <div style={styles.page}>
       <div style={styles.app}>
@@ -1390,7 +1541,7 @@ export default function BennysOriginalDashboard() {
                       background: currentShift ? 'rgba(21,128,61,.5)' : '#4ade80',
                       color: '#fff',
                       opacity: currentShift ? 0.7 : 1,
-                      cursor: currentShift ? 'not-allowed' : 'pointer',
+                      cursor: currentShift ? 'pointer' : 'pointer',
                     }}
                   >
                     <div style={{ fontSize: 44, marginBottom: 16 }}>↪</div>
@@ -1399,12 +1550,11 @@ export default function BennysOriginalDashboard() {
 
                   <button
                     onClick={handleClockOut}
-                    disabled={!currentShift}
                     style={{
                       ...styles.buttonBig,
-                      background: currentShift ? '#3f3f46' : '#27272a',
-                      color: currentShift ? '#fff' : '#a1a1aa',
-                      cursor: currentShift ? 'pointer' : 'not-allowed',
+                      background: '#3f3f46',
+                      color: '#fff',
+                      cursor: 'pointer',
                     }}
                   >
                     <div style={{ fontSize: 44, marginBottom: 16 }}>↩</div>
@@ -1412,8 +1562,8 @@ export default function BennysOriginalDashboard() {
                   </button>
 
                   <div style={styles.darkCard}>
-                    <div style={{ color: '#fef9c3', fontSize: 24 }}>Horas del periodo actual</div>
-                    <div style={{ marginTop: 18, color: '#facc15', fontSize: 64, fontWeight: 300 }}>{formatMinutes(workedMinutes)}</div>
+                    <div style={{ color: '#fef9c3', fontSize: 24 }}>Horas totales</div>
+                    <div style={{ marginTop: 18, color: '#facc15', fontSize: 64, fontWeight: 300 }}>{formatMinutes(workMinutes)}</div>
                   </div>
                 </div>
 
@@ -1433,18 +1583,24 @@ export default function BennysOriginalDashboard() {
                           </tr>
                         </thead>
                         <tbody>
-                          {shiftRows.length === 0 ? (
+                          {shiftRowsFiltrados.length === 0 ? (
                             <tr>
-                              <td style={styles.td} colSpan={5}>No hay fichajes todavía</td>
+                              <td style={styles.td} colSpan={5}>
+                                No hay fichajes todavía
+                              </td>
                             </tr>
                           ) : (
-                            shiftRows.map((r) => (
+                            shiftRowsFiltrados.map((r) => (
                               <tr key={r.id}>
                                 <td style={styles.td}>{r.nombre}</td>
                                 <td style={styles.td}>{r.fecha}</td>
                                 <td style={styles.td}>{r.entrada}</td>
                                 <td style={styles.td}>{r.salida}</td>
-                                <td style={styles.td}>{r.horas}</td>
+                                <td>
+                                  {r.horas !== "--"
+                                    ? formatMinutes(Math.round(parseFloat(r.horas) * 60))
+                                    : "--"}
+                                </td>
                               </tr>
                             ))
                           )}
@@ -1568,7 +1724,6 @@ export default function BennysOriginalDashboard() {
                                 {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
                               </th>
                               <th style={styles.productsHeadCell}>FullTunning</th>
-
                             </tr>
                           </thead>
 
@@ -1642,6 +1797,7 @@ export default function BennysOriginalDashboard() {
                                   >
                                     {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
                                   </td>
+
                                   <td
                                     style={{
                                       ...styles.productsCell,
@@ -1774,114 +1930,6 @@ export default function BennysOriginalDashboard() {
                 </div>
               </section>
             )}
-{activeNav === 'Registros' && (
-              <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
-                <div style={styles.card}>
-                  <h2 style={styles.title}>Registros</h2>
-                  <div style={styles.subtitle}>Gestión de eventos y seguridad</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 24 }}>
-                    <div style={{ ...styles.card, background: '#111' }}>
-                      <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #eab308 0%, #737373 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
-                        Inscripción de Eventos
-                      </div>
-                      <div style={{ padding: 20, display: 'grid', gap: 18 }}>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Nombre del Participante</label>
-                          <input
-                            style={styles.input}
-                            value={eventForm.participant}
-                            onChange={(e) => setEventForm((p) => ({ ...p, participant: e.target.value }))}
-                            placeholder="Nombre completo"
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Evento</label>
-                          <input
-                            style={styles.input}
-                            value={eventForm.event}
-                            onChange={(e) => setEventForm((p) => ({ ...p, event: e.target.value }))}
-                            placeholder="Escribe el nombre del evento"
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Observación</label>
-                          <textarea
-                            style={styles.textarea}
-                            value={eventForm.note}
-                            onChange={(e) => setEventForm((p) => ({ ...p, note: e.target.value }))}
-                            placeholder="Notas adicionales..."
-                          />
-                        </div>
-                        <button style={styles.formBtn} onClick={handleEventRegistration}>Enviar Inscripción</button>
-                        {eventStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{eventStatus}</div> : null}
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gap: 24 }}>
-                      <div style={{ ...styles.card, background: '#111' }}>
-                        <div style={{ borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #450a0a 0%, #991b1b 100%)', padding: '18px 20px', fontSize: 34, fontWeight: 900 }}>
-                          Registro Policial
-                        </div>
-                        <div style={{ padding: 20, display: 'grid', gap: 18 }}>
-                          <div>
-                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Número de Placa</label>
-                            <input
-                              style={styles.input}
-                              value={plateInput}
-                              onChange={(e) => setPlateInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 3))}
-                              placeholder="231"
-                            />
-                            <div style={{ marginTop: 8, color: '#a1a1aa', fontSize: 18 }}>Formato: 231</div>
-                          </div>
-                          <div>
-                            <label style={{ display: 'block', marginBottom: 10, fontSize: 20, fontWeight: 700 }}>Producto</label>
-                            <input
-                              style={styles.input}
-                              value={plateProductInput}
-                              onChange={(e) => setPlateProductInput(e.target.value)}
-                              placeholder="Producto"
-                            />
-                          </div>
-                          <button style={styles.formBtn} onClick={handlePlateRegister}>Registrar Placa</button>
-                        </div>
-                      </div>
-
-                      <div style={{ ...styles.card, background: '#1e1e1e' }}>
-                        <div style={{ fontSize: 24, color: '#d4d4d8' }}>Total de Placas Registradas</div>
-                        <div style={{ marginTop: 10, fontSize: 70, fontWeight: 900 }}>{plates.length}</div>
-                      </div>
-
-                      <div style={{ ...styles.card, background: '#111' }}>
-                        <div style={{ fontSize: 38, fontWeight: 900, marginBottom: 16 }}>Últimas Placas Registradas</div>
-                        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
-                          {session?.username === 'Theory' && (
-                            <>
-                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Exportar Excel</button>
-                              <button style={{ ...styles.sideAction, width: 'auto', background: '#27272a', color: '#fff' }} onClick={exportPlates}>Historial</button>
-                            </>
-                          )}
-                        </div>
-                        <div style={{ maxHeight: 170, overflow: 'auto', display: 'grid', gap: 12 }}>
-                          {plates.length === 0 ? (
-                            <div style={{ color: '#a1a1aa', fontSize: 20 }}>No hay placas registradas</div>
-                          ) : (
-                            plates.map((item, i) => (
-                              <div
-                                key={`${item.plate}-${i}`}
-                                style={{ borderRadius: 16, background: '#18181b', padding: '14px 16px', fontSize: 20, fontWeight: 700 }}
-                              >
-                                Placa {item.plate} · Veces: {item.count}{item.product ? ` · Producto: ${item.product}` : ''}
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
-
 
             {activeNav === 'Beneficios' && (
               <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr', gap: 24 }}>
@@ -1949,5 +1997,4 @@ export default function BennysOriginalDashboard() {
     </div>
   );
 }
-
 

@@ -22,7 +22,7 @@ const rankRates = {
 
 const initialProductsByCategory = {
   'Mejoras avanzadas': [
-    { name: 'Tracción total (AWD)', normal: 920, convenio: 900,  },
+    { name: 'Tracción total (AWD)', normal: 920, convenio: 900, },
     { name: 'Tracción trasera (RWD)', normal: 600, convenio: 470 },
     { name: 'Tracción delantera (FWD)', normal: 600, convenio: 550 },
     { name: 'Neumáticos slick', normal: 700, convenio: 600 },
@@ -894,6 +894,7 @@ function StatCard({ title, value, subtitle, valueClass }) {
 }
 
 export default function BennysOriginalDashboard() {
+  const [shiftRows, setShiftRows] = useState([]);
   const [users] = useState(initialUsers);
   const [session, setSession] = useState(() => loadLS('bennys_session', null));
   const [activeNav, setActiveNav] = useState('Inicio');
@@ -936,6 +937,48 @@ export default function BennysOriginalDashboard() {
   useEffect(() => localStorage.setItem('bennys_shifts', JSON.stringify(shifts)), [shifts]);
   useEffect(() => localStorage.setItem('bennys_events', JSON.stringify(eventRegistrations)), [eventRegistrations]);
   useEffect(() => localStorage.setItem('bennys_plates', JSON.stringify(plates)), [plates]);
+  useEffect(() => {
+    const cargarFichajes = async () => {
+      try {
+        const url = "https://docs.google.com/spreadsheets/d/1KQQ6vv6QoBbFOdz4K0yaRvjblo_xnMEOAtleN27UDws/export?format=xlsx";
+
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+
+        const workbook = XLSX.read(buffer, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        const data = XLSX.utils.sheet_to_json(sheet);
+        const parsed = data.map((row, i) => {
+          const fechaObj = excelDateToJSDate(row["Fecha"]);
+
+          return {
+            id: i,
+            nombre: row["Nombre"],
+
+            fecha: fechaObj.toLocaleDateString("es-ES"),
+
+            entrada: excelTimeToHHMM(row["Entrada"]),
+
+            salida: row["Salida"]
+              ? excelTimeToHHMM(row["Salida"])
+              : "--:--",
+
+            horas: row["Horas Totales"]
+              ? (row["Horas Totales"] * 24).toFixed(2) + "h"
+              : "--",
+          };
+        });
+
+        setShiftRows(parsed);
+
+      } catch (err) {
+        console.error("Error leyendo Excel:", err);
+      }
+    };
+
+    cargarFichajes();
+  }, []);
 
   const currentShift = useMemo(() => {
     if (!session?.username) return null;
@@ -943,22 +986,22 @@ export default function BennysOriginalDashboard() {
   }, [shifts, session]);
 
   const visibleProducts = useMemo(() => initialProductsByCategory[selectedCategory] || [], [selectedCategory]);
-const vehicleCategories = [
-  'Sedans',
-  'Motos',
-  'Vans',
-  'Off-Road',
-  'Compactos',
-  'Bicletas',
-  'Coupes',
-  'SUVs',
-  'Muscle',
-  'Super',
-  'Sport Classic',
-  'Deportivos',
-];
+  const vehicleCategories = [
+    'Sedans',
+    'Motos',
+    'Vans',
+    'Off-Road',
+    'Compactos',
+    'Bicletas',
+    'Coupes',
+    'SUVs',
+    'Muscle',
+    'Super',
+    'Sport Classic',
+    'Deportivos',
+  ];
 
-const isVehicleCategory = vehicleCategories.includes(selectedCategory);
+  const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const workedMinutes = useMemo(() => {
     if (!session?.username) return 0;
     return shifts
@@ -976,19 +1019,19 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
   const payrollTotal = subtotalHoras + salesCommission + bonoApertura + bonoEvento;
   const salesVisible = useMemo(() => [...sales].sort((a, b) => new Date(b.time) - new Date(a.time)), [sales]);
 
-  const shiftRows = useMemo(
-    () =>
-      [...shifts]
-        .sort((a, b) => new Date(b.start) - new Date(a.start))
-        .map((s) => ({
-          ...s,
-          fecha: formatDate(s.start),
-          entrada: formatTime(s.start),
-          salida: s.end ? formatTime(s.end) : '--:--',
-          horas: formatMinutes(diffMinutes(s.start, s.end || dateTimeNow())),
-        })),
-    [shifts]
-  );
+  // const shiftRows = useMemo(
+  //   () =>
+  //     [...shifts]
+  //       .sort((a, b) => new Date(b.start) - new Date(a.start))
+  //       .map((s) => ({
+  //         ...s,
+  //         fecha: formatDate(s.start),
+  //         entrada: formatTime(s.start),
+  //         salida: s.end ? formatTime(s.end) : '--:--',
+  //         horas: formatMinutes(diffMinutes(s.start, s.end || dateTimeNow())),
+  //       })),
+  //   [shifts]
+  // );
 
   const convenioEntries = useMemo(
     () => Object.entries(convenioData).map(([cat, list]) => ({ cat, count: `${list.length} locales`, active: cat === selectedConvenio })),
@@ -1072,15 +1115,15 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     setSession({ username: found.username, role: found.role, displayName: found.displayName, rank: found.rank, loginAt: dateTimeNow() });
   };
 
-  const handleClockIn = () => {
-    if (!session?.username || currentShift) return;
-    setShifts((prev) => [...prev, { id: Date.now(), nombre: session.username, start: dateTimeNow(), end: null }]);
-  };
+  // const handleClockIn = () => {
+  //   if (!session?.username || currentShift) return;
+  //   setShifts((prev) => [...prev, { id: Date.now(), nombre: session.username, start: dateTimeNow(), end: null }]);
+  // };
 
-  const handleClockOut = () => {
-    if (!currentShift) return;
-    setShifts((prev) => prev.map((s) => (s.id === currentShift.id ? { ...s, end: dateTimeNow() } : s)));
-  };
+  // const handleClockOut = () => {
+  //   if (!currentShift) return;
+  //   setShifts((prev) => prev.map((s) => (s.id === currentShift.id ? { ...s, end: dateTimeNow() } : s)));
+  // };
 
   const pickPrice = (product, price, label) => {
     if (price === null || price === undefined || !Number.isFinite(Number(price))) return;
@@ -1319,6 +1362,114 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
     );
   }
 
+  const URL = "https://docs.google.com/forms/d/e/1FAIpQLSfxqesIlOkXjIXCsntgnH7pZ4_Jgs_L-gaNvYfrcY0IoCBiig/formResponse";
+  const handleClockIn = async () => {
+    const ahora = new Date();
+
+    localStorage.setItem("entrada", ahora.toISOString());
+
+    const formData = new FormData();
+
+    formData.append("entry.1175950074", session.displayName);
+
+    formData.append("entry.800526615_year", ahora.getFullYear());
+    formData.append("entry.800526615_month", ahora.getMonth() + 1);
+    formData.append("entry.800526615_day", ahora.getDate());
+
+    formData.append("entry.2074533824_hour", ahora.getHours());
+    formData.append("entry.2074533824_minute", ahora.getMinutes());
+
+    // salida vacía
+    formData.append("entry.866622763_hour", "");
+    formData.append("entry.866622763_minute", "");
+
+    // horas vacías
+    formData.append("entry.858242825_hour", "");
+    formData.append("entry.858242825_minute", "");
+
+    await fetch(URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+  };
+  const handleClockOut = async () => {
+    const entradaISO = localStorage.getItem("entrada");
+
+    if (!entradaISO) {
+      alert("No has fichado entrada");
+      return;
+    }
+
+    const entrada = new Date(entradaISO);
+    const salida = new Date();
+
+    const diffMs = salida - entrada;
+    const horas = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs / (1000 * 60)) % 60);
+
+    const formData = new FormData();
+
+    formData.append("entry.1175950074", session.displayName);
+
+    formData.append("entry.800526615_year", salida.getFullYear());
+    formData.append("entry.800526615_month", salida.getMonth() + 1);
+    formData.append("entry.800526615_day", salida.getDate());
+
+    // entrada original
+    formData.append("entry.2074533824_hour", entrada.getHours());
+    formData.append("entry.2074533824_minute", entrada.getMinutes());
+
+    // salida real
+    formData.append("entry.866622763_hour", salida.getHours());
+    formData.append("entry.866622763_minute", salida.getMinutes());
+
+    // horas calculadas
+    formData.append("entry.858242825_hour", horas);
+    formData.append("entry.858242825_minute", minutos);
+
+    await fetch(URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    });
+
+    localStorage.removeItem("entrada");
+  };
+  const excelDateToJSDate = (serial) => {
+    const utc_days = Math.floor(serial - 25569);
+    const utc_value = utc_days * 86400;
+    return new Date(utc_value * 1000);
+  };
+
+  const excelTimeToHHMM = (value) => {
+    if (!value) return "--:--";
+
+    const totalSeconds = Math.round(value * 86400);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  };
+  const shiftRowsFiltrados = shiftRows.filter(
+    r => r.nombre?.toLowerCase() === session.displayName?.toLowerCase() && (r.horas && r.horas !== "--")
+  );
+  const workMinutes = shiftRowsFiltrados.reduce((total, r) => {
+    if (!r.horas || r.horas === "--") return total;
+
+    const horasNum = Number(r.horas.replace("h", ""));
+    if (!horasNum) return total;
+
+    const minutos = Math.floor(horasNum * 60);
+
+    return total + minutos;
+  }, 0);
+  const formatMinutes = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = Math.round(mins % 60);
+
+    return `${h}h ${String(m).padStart(2, "0")}m`;
+  };
   return (
     <div style={styles.page}>
       <div style={styles.app}>
@@ -1390,7 +1541,7 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                       background: currentShift ? 'rgba(21,128,61,.5)' : '#4ade80',
                       color: '#fff',
                       opacity: currentShift ? 0.7 : 1,
-                      cursor: currentShift ? 'not-allowed' : 'pointer',
+                      cursor: currentShift ? 'pointer' : 'pointer',
                     }}
                   >
                     <div style={{ fontSize: 44, marginBottom: 16 }}>↪</div>
@@ -1399,12 +1550,11 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
 
                   <button
                     onClick={handleClockOut}
-                    disabled={!currentShift}
                     style={{
                       ...styles.buttonBig,
-                      background: currentShift ? '#3f3f46' : '#27272a',
-                      color: currentShift ? '#fff' : '#a1a1aa',
-                      cursor: currentShift ? 'pointer' : 'not-allowed',
+                      background: '#3f3f46',
+                      color: '#fff',
+                      cursor: 'pointer',
                     }}
                   >
                     <div style={{ fontSize: 44, marginBottom: 16 }}>↩</div>
@@ -1412,8 +1562,8 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                   </button>
 
                   <div style={styles.darkCard}>
-                    <div style={{ color: '#fef9c3', fontSize: 24 }}>Horas del periodo actual</div>
-                    <div style={{ marginTop: 18, color: '#facc15', fontSize: 64, fontWeight: 300 }}>{formatMinutes(workedMinutes)}</div>
+                    <div style={{ color: '#fef9c3', fontSize: 24 }}>Horas totales</div>
+                    <div style={{ marginTop: 18, color: '#facc15', fontSize: 64, fontWeight: 300 }}>{formatMinutes(workMinutes)}</div>
                   </div>
                 </div>
 
@@ -1433,18 +1583,24 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
                           </tr>
                         </thead>
                         <tbody>
-                          {shiftRows.length === 0 ? (
+                          {shiftRowsFiltrados.length === 0 ? (
                             <tr>
-                              <td style={styles.td} colSpan={5}>No hay fichajes todavía</td>
+                              <td style={styles.td} colSpan={5}>
+                                No hay fichajes todavía
+                              </td>
                             </tr>
                           ) : (
-                            shiftRows.map((r) => (
+                            shiftRowsFiltrados.map((r) => (
                               <tr key={r.id}>
                                 <td style={styles.td}>{r.nombre}</td>
                                 <td style={styles.td}>{r.fecha}</td>
                                 <td style={styles.td}>{r.entrada}</td>
                                 <td style={styles.td}>{r.salida}</td>
-                                <td style={styles.td}>{r.horas}</td>
+                                <td>
+                                  {r.horas !== "--"
+                                    ? formatMinutes(Math.round(parseFloat(r.horas) * 60))
+                                    : "--"}
+                                </td>
                               </tr>
                             ))
                           )}
@@ -1530,239 +1686,250 @@ const isVehicleCategory = vehicleCategories.includes(selectedCategory);
               </section>
             )}
 
-           {activeNav === 'Productos & Ventas' && (
-  <section style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.8fr', gap: 24 }}>
-    <div style={styles.card}>
-      <h2 style={styles.title}>Productos & Ventas</h2>
-      <div style={styles.subtitle}>Gestiona el catálogo y registra ventas</div>
+            {activeNav === 'Productos & Ventas' && (
+              <section style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.8fr', gap: 24 }}>
+                <div style={styles.card}>
+                  <h2 style={styles.title}>Productos & Ventas</h2>
+                  <div style={styles.subtitle}>Gestiona el catálogo y registra ventas</div>
 
-      <div style={styles.categoryGrid}>
-        {categories.map((c, i) => (
-          <button key={c} onClick={() => setSelectedCategory(c)} style={categoryButtonStyle(c, i)}>
-            {c}
-          </button>
-        ))}
-      </div>
+                  <div style={styles.categoryGrid}>
+                    {categories.map((c, i) => (
+                      <button key={c} onClick={() => setSelectedCategory(c)} style={categoryButtonStyle(c, i)}>
+                        {c}
+                      </button>
+                    ))}
+                  </div>
 
-      <div style={styles.productsPanel}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 22 }}>
-          <div style={{ flex: 1 }}>
-            <h3 style={styles.productsTitle}>Productos -<br />{selectedCategory}</h3>
-            <div style={styles.productsDesc}>
-              Pulsa un precio de la guía o el nombre del producto y se cargará en el formulario de venta.
-            </div>
-          </div>
-          <div style={styles.productsCount}>{visibleProducts.length}<br />productos</div>
-        </div>
+                  <div style={styles.productsPanel}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 22 }}>
+                      <div style={{ flex: 1 }}>
+                        <h3 style={styles.productsTitle}>Productos -<br />{selectedCategory}</h3>
+                        <div style={styles.productsDesc}>
+                          Pulsa un precio de la guía o el nombre del producto y se cargará en el formulario de venta.
+                        </div>
+                      </div>
+                      <div style={styles.productsCount}>{visibleProducts.length}<br />productos</div>
+                    </div>
 
-        <div style={styles.productsTableWrap}>
-          <div style={styles.productsTableScroller}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={styles.productsHeadCell}>Producto</th>
-                  <th style={styles.productsHeadCell}>Precio<br />Normal</th>
-                  <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
-                  <th style={styles.productsHeadCell}>
-                    {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
-                    {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
-                  </th>
-                    <th style={styles.productsHeadCell}>FullTunning</th>
-                    
-                </tr>
-              </thead>
+                    <div style={styles.productsTableWrap}>
+                      <div style={styles.productsTableScroller}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <thead>
+                            <tr>
+                              <th style={styles.productsHeadCell}>Producto</th>
+                              <th style={styles.productsHeadCell}>Precio<br />Normal</th>
+                              <th style={styles.productsHeadCell}>Precio<br />Convenio</th>
+                              <th style={styles.productsHeadCell}>
+                                {isVehicleCategory ? 'Precio Full Tuning' : 'Precio'}<br />
+                                {isVehicleCategory ? '(manual, no incluye motor)' : 'Oferta'}
+                              </th>
+                              <th style={styles.productsHeadCell}>FullTunning</th>
+                            </tr>
+                          </thead>
 
-              <tbody>
-                {visibleProducts.length === 0 ? (
-                  <tr>
-                    <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
-                  </tr>
-                ) : (
-                  visibleProducts.map((p) => (
-                    <tr key={`${selectedCategory}-${p.name}`}>
-                      <td
-                        style={{
-                          ...styles.productsCell,
-                          cursor: 'pointer',
-                          fontWeight: 900,
-                          fontSize: 22,
-                          lineHeight: 1.25,
-                          color: '#fafafa',
-                        }}
-                        onClick={() =>
-                          setSaleForm({
-                            product: p.name,
-                            amount: String(p.fullTuning ?? p.convenio ?? p.normal ?? ''),
-                            source: isVehicleCategory
-                              ? 'Producto seleccionado · Full Tuning manual (sin motor)'
-                              : 'Producto seleccionado',
-                          })
-                        }
-                      >
-                        {p.name}
-                      </td>
+                          <tbody>
+                            {visibleProducts.length === 0 ? (
+                              <tr>
+                                <td style={styles.productsCell} colSpan={4}>No hay productos todavía</td>
+                              </tr>
+                            ) : (
+                              visibleProducts.map((p) => (
+                                <tr key={`${selectedCategory}-${p.name}`}>
+                                  <td
+                                    style={{
+                                      ...styles.productsCell,
+                                      cursor: 'pointer',
+                                      fontWeight: 900,
+                                      fontSize: 22,
+                                      lineHeight: 1.25,
+                                      color: '#fafafa',
+                                    }}
+                                    onClick={() =>
+                                      setSaleForm({
+                                        product: p.name,
+                                        amount: String(p.fullTuning ?? p.convenio ?? p.normal ?? ''),
+                                        source: isVehicleCategory
+                                          ? 'Producto seleccionado · Full Tuning manual (sin motor)'
+                                          : 'Producto seleccionado',
+                                      })
+                                    }
+                                  >
+                                    {p.name}
+                                  </td>
 
-                      <td
-                        style={{
-                          ...styles.productsCell,
-                          cursor: 'pointer',
-                          fontSize: 22,
-                          color: '#fde68a',
-                        }}
-                        onClick={() => pickPrice(p, p.normal, 'Precio normal')}
-                      >
-                        {currency(p.normal)}
-                      </td>
+                                  <td
+                                    style={{
+                                      ...styles.productsCell,
+                                      cursor: 'pointer',
+                                      fontSize: 22,
+                                      color: '#fde68a',
+                                    }}
+                                    onClick={() => pickPrice(p, p.normal, 'Precio normal')}
+                                  >
+                                    {currency(p.normal)}
+                                  </td>
 
-                      <td
-                        style={{
-                          ...styles.productsCell,
-                          cursor: 'pointer',
-                          fontSize: 22,
-                          color: '#9ca3af',
-                        }}
-                        onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
-                      >
-                        {currency(p.convenio)}
-                      </td>
+                                  <td
+                                    style={{
+                                      ...styles.productsCell,
+                                      cursor: 'pointer',
+                                      fontSize: 22,
+                                      color: '#9ca3af',
+                                    }}
+                                    onClick={() => pickPrice(p, p.convenio, 'Precio convenio')}
+                                  >
+                                    {currency(p.convenio)}
+                                  </td>
 
-                      <td
-                        style={{
-                          ...styles.productsCell,
-                          cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
-                          fontSize: 22,
-                          color: '#22c55e',
-                          fontWeight: 900,
-                        }}
-                        onClick={() => {
-                          if (p.fullTuning !== undefined) {
-                            pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
-                          }
-                        }}
-                      >
-                        {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+                                  <td
+                                    style={{
+                                      ...styles.productsCell,
+                                      cursor: p.fullTuning !== undefined ? 'pointer' : 'default',
+                                      fontSize: 22,
+                                      color: '#22c55e',
+                                      fontWeight: 900,
+                                    }}
+                                    onClick={() => {
+                                      if (p.fullTuning !== undefined) {
+                                        pickPrice(p, p.fullTuning, 'Precio Full Tuning manual (sin motor)');
+                                      }
+                                    }}
+                                  >
+                                    {p.fullTuning !== undefined ? currency(p.fullTuning) : '—'}
+                                  </td>
 
-    <div style={{ display: 'grid', gap: 24 }}>
-      <div
-        style={{
-          borderRadius: 32,
-          padding: 28,
-          background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-          <div style={{ fontSize: 46, fontWeight: 900, lineHeight: 1 }}>
-            Mis<br />Últimas<br />Ventas
-          </div>
-          <div style={{ fontSize: 26, fontWeight: 800, textAlign: 'right' }}>
-            {salesVisible.length}<br />visibles
-          </div>
-        </div>
-
-        <div style={{ marginTop: 20, color: '#9ca3af', fontSize: 20 }}>
-          {salesVisible.length === 0 ? 'No hay ventas todavía' : ''}
-        </div>
-
-        {salesVisible.length > 0 ? (
-          <div style={{ marginTop: 18, display: 'grid', gap: 12, maxHeight: 260, overflow: 'auto', paddingRight: 4 }}>
-            {salesVisible.slice(0, 6).map((sale) => (
-              <div key={sale.id} style={styles.listCard}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
-                  <div>
-                    <div style={{ fontSize: 22, fontWeight: 800 }}>{sale.name}</div>
-                    <div style={{ marginTop: 6, color: '#d4d4d8', fontSize: 16 }}>
-                      {String(sale.time).replace('T', ' ').slice(0, 19)}
+                                  <td
+                                    style={{
+                                      ...styles.productsCell,
+                                      cursor: 'pointer',
+                                      fontSize: 22,
+                                      color: '#fde68a',
+                                    }}
+                                    onClick={() => pickPrice(p, p.fullTuning, 'Precio normal')}
+                                  >
+                                    {currency(p.fullTuning)}
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
-                  <div style={{ color: '#4ade80', fontSize: 28, fontWeight: 900 }}>{currency(sale.amount)}</div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
 
-        <div style={{ marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 26 }}>Total:</span>
-            <span style={{ fontSize: 48, fontWeight: 900, color: '#22c55e' }}>{currency(salesTotal)}</span>
-          </div>
+                <div style={{ display: 'grid', gap: 24 }}>
+                  <div
+                    style={{
+                      borderRadius: 32,
+                      padding: 28,
+                      background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+                      <div style={{ fontSize: 46, fontWeight: 900, lineHeight: 1 }}>
+                        Mis<br />Últimas<br />Ventas
+                      </div>
+                      <div style={{ fontSize: 26, fontWeight: 800, textAlign: 'right' }}>
+                        {salesVisible.length}<br />visibles
+                      </div>
+                    </div>
 
-          <div style={{ marginTop: 14, color: '#9ca3af', fontSize: 18 }}>
-            Última actualización visible: {currentTime.toLocaleString('es-ES')}
-          </div>
-        </div>
-      </div>
+                    <div style={{ marginTop: 20, color: '#9ca3af', fontSize: 20 }}>
+                      {salesVisible.length === 0 ? 'No hay ventas todavía' : ''}
+                    </div>
 
-      <div
-        style={{
-          borderRadius: 32,
-          padding: 28,
-          background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
-        }}
-      >
-        <div style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.05 }}>Registrar<br />Venta</div>
-        <div style={{ marginTop: 16, color: '#9ca3af', fontSize: 20, lineHeight: 1.5 }}>
-          Selecciona un precio desde la tabla o escribe el monto manualmente.
-        </div>
+                    {salesVisible.length > 0 ? (
+                      <div style={{ marginTop: 18, display: 'grid', gap: 12, maxHeight: 260, overflow: 'auto', paddingRight: 4 }}>
+                        {salesVisible.slice(0, 6).map((sale) => (
+                          <div key={sale.id} style={styles.listCard}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
+                              <div>
+                                <div style={{ fontSize: 22, fontWeight: 800 }}>{sale.name}</div>
+                                <div style={{ marginTop: 6, color: '#d4d4d8', fontSize: 16 }}>
+                                  {String(sale.time).replace('T', ' ').slice(0, 19)}
+                                </div>
+                              </div>
+                              <div style={{ color: '#4ade80', fontSize: 28, fontWeight: 900 }}>{currency(sale.amount)}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
 
-        <div style={{ marginTop: 24, display: 'grid', gap: 18 }}>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Producto</div>
-            <input
-              style={styles.input}
-              value={saleForm.product}
-              onChange={(e) => setSaleForm((p) => ({ ...p, product: e.target.value }))}
-              placeholder="Nombre del producto"
-            />
-          </div>
+                    <div style={{ marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 26 }}>Total:</span>
+                        <span style={{ fontSize: 48, fontWeight: 900, color: '#22c55e' }}>{currency(salesTotal)}</span>
+                      </div>
 
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Monto</div>
-            <input
-              style={styles.input}
-              value={saleForm.amount}
-              onChange={(e) => setSaleForm((p) => ({ ...p, amount: e.target.value }))}
-              placeholder="0"
-            />
-          </div>
+                      <div style={{ marginTop: 14, color: '#9ca3af', fontSize: 18 }}>
+                        Última actualización visible: {currentTime.toLocaleString('es-ES')}
+                      </div>
+                    </div>
+                  </div>
 
-          <div style={{ fontSize: 18, fontWeight: 800, textDecoration: 'underline', lineHeight: 1.5 }}>
-            {saleForm.source || 'Aún no has seleccionado un precio de la guía.'}
-          </div>
+                  <div
+                    style={{
+                      borderRadius: 32,
+                      padding: 28,
+                      background: 'linear-gradient(180deg,#0b0b0b 0%, #050505 100%)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: '0 24px 50px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.03)',
+                    }}
+                  >
+                    <div style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.05 }}>Registrar<br />Venta</div>
+                    <div style={{ marginTop: 16, color: '#9ca3af', fontSize: 20, lineHeight: 1.5 }}>
+                      Selecciona un precio desde la tabla o escribe el monto manualmente.
+                    </div>
 
-          <button style={styles.formBtn} onClick={handleAddSale}>
-            + Registrar Venta
-          </button>
+                    <div style={{ marginTop: 24, display: 'grid', gap: 18 }}>
+                      <div>
+                        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Producto</div>
+                        <input
+                          style={styles.input}
+                          value={saleForm.product}
+                          onChange={(e) => setSaleForm((p) => ({ ...p, product: e.target.value }))}
+                          placeholder="Nombre del producto"
+                        />
+                      </div>
 
-          {saleStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{saleStatus}</div> : null}
+                      <div>
+                        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Monto</div>
+                        <input
+                          style={styles.input}
+                          value={saleForm.amount}
+                          onChange={(e) => setSaleForm((p) => ({ ...p, amount: e.target.value }))}
+                          placeholder="0"
+                        />
+                      </div>
 
-          <div style={{ display: 'grid', gap: 10 }}>
-            <button style={{ ...styles.sideAction, background: '#27272a', color: '#fff' }} onClick={exportSalesOnly}>
-              Exportar ventas
-            </button>
-            <button style={{ ...styles.sideAction, background: '#1f2937', color: '#fff' }} onClick={exportVisibleSales}>
-              Exportar visibles
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-)}
+                      <div style={{ fontSize: 18, fontWeight: 800, textDecoration: 'underline', lineHeight: 1.5 }}>
+                        {saleForm.source || 'Aún no has seleccionado un precio de la guía.'}
+                      </div>
+
+                      <button style={styles.formBtn} onClick={handleAddSale}>
+                        + Registrar Venta
+                      </button>
+
+                      {saleStatus ? <div style={{ color: '#d4d4d8', fontSize: 18, fontWeight: 700 }}>{saleStatus}</div> : null}
+
+                      <div style={{ display: 'grid', gap: 10 }}>
+                        <button style={{ ...styles.sideAction, background: '#27272a', color: '#fff' }} onClick={exportSalesOnly}>
+                          Exportar ventas
+                        </button>
+                        <button style={{ ...styles.sideAction, background: '#1f2937', color: '#fff' }} onClick={exportVisibleSales}>
+                          Exportar visibles
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {activeNav === 'Beneficios' && (
               <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr', gap: 24 }}>

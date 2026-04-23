@@ -1010,7 +1010,7 @@ export default function BennysOriginalDashboard() {
   }, [shifts, session]);
 
   const salesTotal = useMemo(() => sales.reduce((acc, s) => acc + Number(s.amount || 0), 0), [sales]);
-  const salesCommission = useMemo(() => salesTotal * 0.2, [salesTotal]);
+  const salesCommission = useMemo(() => salesTotal * 0.05, [salesTotal]);
   const currentRank = session?.rank || 'Aprendiz';
   const hourlyRate = rankRates[currentRank] || 300;
   const subtotalHoras = useMemo(() => (workedMinutes / 60) * hourlyRate, [workedMinutes, hourlyRate]);
